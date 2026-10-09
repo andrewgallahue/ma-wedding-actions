@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Andrew &amp; Maddie's Wedding Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* ================= EDIT HERE =================
+   To mark a task done: change done:false -> done:true on its line,
+   then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
+   and update LAST_UPDATED. */
+const DATA_VERSION = "2026-10-09.1";
+const LAST_UPDATED = "Fri Oct 9, 2026, 3:55 PM PT";
+const WEDDING_DATE = "2026-10-25";
+const TASKS = [
+  {id:1,  task:"Submit Chuck's final guest count form + table assignments", category:"This weekend", due:"2026-10-11", note:"156 wedding, 143 welcome drinks, 55 rehearsal. Count locks after this.", done:false},
+  {id:2,  task:"Confirm Piatti 7-table patio layout with Maddie, then tell Kasey", category:"Rehearsal dinner", due:"2026-10-10", note:"Andrew already told Kasey it looks good pending Maddie.", done:false},
+  {id:3,  task:"Get Bernardo's updated BevMo invoice; check prices and stock (Pusser's, Stone Pilsner)", category:"Alcohol", due:"2026-10-13", note:"Nudged Oct 9.", done:false},
+  {id:4,  task:"Send Chuck the final alcohol list for a thumbs up + ask about nutmeg", category:"Alcohol", due:"2026-10-14", note:"After Bernardo's invoice.", done:false},
+  {id:5,  task:"Buy coconut water at the grocery store", category:"Alcohol", due:"2026-10-24", note:"For the post-ceremony welcome drink; not on the BevMo order.", done:false},
+  {id:6,  task:"Abbey final payment", category:"Payments", due:"2026-10-15", note:"Once Chuck sends the balance.", done:false},
+  {id:7,  task:"Piatti final menu due", category:"Rehearsal dinner", due:"2026-10-17", note:"Apps: 1 platter each.", done:false},
+  {id:8,  task:"Piatti final headcount (55)", category:"Rehearsal dinner", due:"2026-10-21", note:"", done:false},
+  {id:9,  task:"Update Whitney at Wheat & Water to 143 guests", category:"Welcome drinks", due:"2026-10-16", note:"Currently has 142.", done:false},
+  {id:10, task:"Pick songs in Planning Beats: grand entrance, processional, recessional, mother-son, first dance", category:"Music", due:"2026-10-20", note:"Portal: https://twec.planningbeats.com (Maddie has login)", done:false},
+  {id:11, task:"DJ Zoom with Brian, 11am PT", category:"Music", due:"2026-10-21", note:"Zoom: https://us06web.zoom.us/j/87422350715", done:false},
+  {id:12, task:"Practice first dance + mother-son dance", category:"Music", due:"2026-10-23", note:"", done:false},
+  {id:13, task:"Reception table assignments (for Chuck's form)", category:"Seating", due:"2026-10-11", note:"", done:false},
+  {id:14, task:"Ceremony seating plan", category:"Seating", due:"2026-10-18", note:"", done:false},
+  {id:15, task:"Buy poster board, paper clips, string lights for seating display", category:"Seating", due:"2026-10-18", note:"Names on paper clips, a poster board cutout per table, string lights threading the tables.", done:false},
+  {id:16, task:"Bar sign + table runners", category:"Decor", due:"2026-10-18", note:"", done:false},
+  {id:17, task:"Finalize Maddie's photo people list", category:"Photos", due:"2026-10-16", note:"", done:false},
+  {id:18, task:"Day-of event insurance sent to Darlington", category:"Insurance", due:"2026-10-09", note:"", done:true},
+  {id:19, task:"Nudge Bernardo for updated quote", category:"Alcohol", due:"2026-10-09", note:"", done:true},
+];
+/* ============================================= */
+</script>
+<style>
+:root{--sun:#f59e42;--sunset:#e8673c;--coral:#f28b6d;--sand:#f3e3c3;--cream:#fffaf0;--teal:#1f8a8a;--deep:#0f5257;--ink:#2d3436;--muted:#6b7275}
+*{box-sizing:border-box}
+body{margin:0;font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--cream);line-height:1.45;-webkit-text-size-adjust:100%}
+header{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffd9a0 0%,#ffc58a 38%,#f8a873 62%,#7cc6c0 63%,#4fa9a6 100%);padding:28px 20px 70px;text-align:center}
+header .sun{position:absolute;top:14px;right:6%;width:110px;height:110px}
+header .palm{position:absolute;bottom:0;left:2%;width:120px;height:200px}
+header .waves{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:40px;display:block}
+.htext{position:relative;z-index:2;max-width:720px;margin:0 auto}
+h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(30px,6.5vw,52px);line-height:1.05;margin:8px 0 6px;color:var(--deep);text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.sub{font-size:15px;font-weight:500;color:#5a3b22;margin:0}
+.count{display:inline-block;margin-top:12px;background:rgba(255,250,240,.88);color:var(--sunset);font-weight:600;padding:6px 16px;border-radius:999px;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+main{max-width:760px;margin:-34px auto 0;padding:0 14px 30px;position:relative;z-index:3}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(15,82,87,.10);padding:16px 18px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;color:var(--deep);margin-bottom:8px}
+.prog-top span:last-child{color:var(--muted);font-weight:500;font-size:14px}
+.bar{height:12px;background:var(--sand);border-radius:999px;overflow:hidden}
+.bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--sunset));border-radius:999px;transition:width .4s}
+.filters{display:flex;flex-wrap:wrap;gap:8px;overflow-x:auto;padding:14px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:500;border:1.5px solid #e2d3b5;background:#fff;color:var(--ink);padding:6px 13px;border-radius:999px;cursor:pointer}
+.filters button.on{background:var(--deep);border-color:var(--deep);color:#fff}
+.group{margin-top:18px}
+.ghead{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--teal);margin:0 0 8px 4px}
+.ghead::after{content:"";flex:1;height:1px;background:#e8dcc4}
+.ghead.hot{color:var(--sunset)}
+.item{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:14px;padding:13px 14px;margin-bottom:9px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:5px solid transparent;transition:opacity .2s}
+.item.soon{border-left-color:var(--sun);background:#fff6e8}
+.item.overdue{border-left-color:#d64545;background:#fff0ec}
+.item.done{opacity:.5;background:#fff;border-left-color:transparent}
+.item.done .t{text-decoration:line-through}
+.item input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:24px;height:24px;margin:1px 0 0;border:2px solid var(--teal);border-radius:7px;cursor:pointer;display:grid;place-items:center;background:#fff}
+.item input:checked{background:var(--teal)}
+.item input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.body{flex:1;min-width:0}
+.t{font-weight:500;font-size:15.5px;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:12.5px}
+.pill{padding:2px 10px;border-radius:999px;font-weight:600;font-size:11.5px;color:#fff;white-space:nowrap}
+.due{color:var(--muted);font-weight:500}
+.flag{font-weight:600;color:var(--sunset)}
+.overdue .flag{color:#c23a3a}
+.note{margin-top:6px;font-size:13.5px;color:#555;overflow-wrap:anywhere}
+.note a{color:var(--teal);font-weight:600}
+.empty{text-align:center;color:var(--muted);padding:30px}
+footer{text-align:center;font-size:12.5px;color:var(--muted);padding:10px 16px 34px}
+footer button{font:inherit;font-size:12px;background:none;border:none;color:var(--teal);text-decoration:underline;cursor:pointer}
+@media (max-width:560px){
+ header{padding:22px 16px 62px}
+ header .sun{width:78px;height:78px;top:-20px;right:-20px}
+ .filters{flex-wrap:nowrap}
+ header .palm{width:78px;height:130px;left:-6px}
+ .htext{padding:0 34px}
+ .sub{font-size:13.5px}
+ .count{font-size:14px}
+}
+</style>
+</head>
+<body>
+<header>
+  <svg class="sun" viewBox="0 0 120 120" aria-hidden="true">
+    <g stroke="#ffb340" stroke-width="5" stroke-linecap="round">
+      <line x1="60" y1="4" x2="60" y2="20"/><line x1="60" y1="100" x2="60" y2="116"/>
+      <line x1="4" y1="60" x2="20" y2="60"/><line x1="100" y1="60" x2="116" y2="60"/>
+      <line x1="20" y1="20" x2="31" y2="31"/><line x1="89" y1="89" x2="100" y2="100"/>
+      <line x1="20" y1="100" x2="31" y2="89"/><line x1="89" y1="31" x2="100" y2="20"/>
+    </g>
+    <circle cx="60" cy="60" r="30" fill="#ffcf4a" stroke="#ffb340" stroke-width="3"/>
+  </svg>
+  <svg class="palm" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M58 200 C60 160 62 120 70 70" stroke="#7a4e2d" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <g fill="#1f6b5a">
+      <path d="M70 68 C50 50 25 52 8 66 C30 58 50 62 70 72Z"/>
+      <path d="M70 68 C60 40 40 28 18 30 C40 38 56 52 68 72Z"/>
+      <path d="M70 68 C78 40 96 28 116 32 C96 40 82 54 72 72Z"/>
+      <path d="M70 68 C92 54 112 60 118 80 C102 66 88 66 72 72Z"/>
+      <path d="M70 68 C66 48 70 30 82 16 C78 36 76 52 72 72Z"/>
+      <path d="M70 70 C52 70 36 84 30 104 C44 88 56 80 72 74Z"/>
+    </g>
+    <circle cx="68" cy="74" r="4" fill="#8a5a2b"/><circle cx="75" cy="73" r="4" fill="#8a5a2b"/>
+  </svg>
+  <div class="htext">
+    <h1>Andrew &amp; Maddie's Wedding Actions</h1>
+    <p class="sub">Oct 25, 2026 · Darlington House, La Jolla</p>
+    <div class="count" id="count"></div>
+  </div>
+  <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 20 C150 0 300 40 450 20 S750 0 900 20 S1100 40 1200 18 V40 H0Z" fill="#fffaf0"/>
+  </svg>
+</header>
+<main>
+  <div class="card">
+    <div class="prog-top"><span id="progTxt"></span><span id="progPct"></span></div>
+    <div class="bar"><div id="progBar"></div></div>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+</main>
+<footer>
+  <div>Last updated: <span id="updated"></span></div>
+  <div>Checkmarks you tap are saved on this device only. <button id="reset">Reset my checkmarks</button></div>
+</footer>
+<script>
+(function(){
+  const COLORS={"This weekend":"#e8673c","Rehearsal dinner":"#c2577a","Alcohol":"#8e5bb5","Payments":"#2f8f4e","Welcome drinks":"#d4892a","Music":"#2d6fb5","Seating":"#1f8a8a","Decor":"#b5683a","Photos":"#5a6abf","Insurance":"#6b7a80"};
+  const KEY="maWeddingActions";
+  let state={};
+  try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.v===DATA_VERSION)state=s.o||{};else localStorage.removeItem(KEY);}catch(e){}
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({v:DATA_VERSION,o:state}))}catch(e){}};
+  const isDone=t=>Object.prototype.hasOwnProperty.call(state,t.id)?state[t.id]:t.done;
+
+  // today's date in Pacific time, as YYYY-MM-DD
+  function todayPT(){
+    const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+    const g=k=>p.find(x=>x.type===k).value;return g("year")+"-"+g("month")+"-"+g("day");
+  }
+  const dnum=s=>{const [y,m,d]=s.split("-").map(Number);return Date.UTC(y,m-1,d)/864e5};
+  const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const fmt=s=>{const [y,m,d]=s.split("-").map(Number);const w=new Date(Date.UTC(y,m-1,d)).getUTCDay();return DOW[w]+" "+MON[m-1]+" "+d};
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const linkify=s=>esc(s).replace(/https?:\/\/[^\s)]+/g,u=>'<a href="'+u+'" target="_blank" rel="noopener">'+u.replace(/^https?:\/\//,"")+'</a>');
+
+  let filter="All";
+  const cats=["All"].concat([...new Set(TASKS.map(t=>t.category))]);
+
+  function renderHeader(){
+    const diff=dnum(WEDDING_DATE)-dnum(todayPT());
+    document.getElementById("count").textContent= diff>1?"☀ "+diff+" days to go": diff===1?"☀ Tomorrow!": diff===0?"☀ Today's the day!":"Just married 💛";
+    document.getElementById("updated").textContent=LAST_UPDATED;
+  }
+  function renderFilters(){
+    const f=document.getElementById("filters");
+    f.innerHTML=cats.map(c=>'<button class="'+(c===filter?"on":"")+'" data-c="'+esc(c)+'">'+esc(c)+'</button>').join("");
+  }
+  function render(){
+    const today=dnum(todayPT());
+    const done=TASKS.filter(isDone).length;
+    document.getElementById("progTxt").textContent=done+" of "+TASKS.length+" done";
+    document.getElementById("progPct").textContent=Math.round(done/TASKS.length*100)+"%";
+    document.getElementById("progBar").style.width=(done/TASKS.length*100)+"%";
+
+    const items=TASKS.filter(t=>filter==="All"||t.category===filter).slice().sort((a,b)=>{
+      if(a.due===b.due)return a.id-b.id; if(!a.due)return 1; if(!b.due)return -1; return a.due<b.due?-1:1;});
+    const groups=[];
+    items.forEach(t=>{const k=t.due||"anytime";let g=groups[groups.length-1];if(!g||g.k!==k){g={k,items:[]};groups.push(g)}g.items.push(t)});
+    const list=document.getElementById("list");
+    if(!items.length){list.innerHTML='<div class="empty">Nothing here.</div>';return}
+    list.innerHTML=groups.map(g=>{
+      let label,hot=false;
+      if(g.k==="anytime")label="Anytime before wedding";
+      else{const d=dnum(g.k)-today;label=fmt(g.k)+(d===0?" · Today":d===1?" · Tomorrow":d<0?" · Past":" · in "+d+" days");hot=d<=3&&g.items.some(t=>!isDone(t))}
+      return '<section class="group"><h2 class="ghead'+(hot?" hot":"")+'">'+label+'</h2>'+g.items.map(t=>{
+        const dn=isDone(t);let cls="",flag="";
+        if(!dn&&t.due){const d=dnum(t.due)-today;if(d<0){cls="overdue";flag="Overdue"}else if(d<=3){cls="soon";flag=d===0?"Due today":d===1?"Due tomorrow":"Due in "+d+" days"}}
+        if(dn)cls="done";
+        return '<div class="item '+cls+'"><input type="checkbox" aria-label="Mark done" data-id="'+t.id+'"'+(dn?" checked":"")+'>'+
+          '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta"><span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>'+
+          '<span class="due">'+(t.due?"Due "+fmt(t.due):"Anytime before wedding")+'</span>'+(flag?'<span class="flag">'+flag+'</span>':"")+'</div>'+
+          (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+'</div></div>';
+      }).join("")+'</section>';
+    }).join("");
+  }
+  document.getElementById("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.c;renderFilters();render()});
+  document.getElementById("list").addEventListener("change",e=>{
+    if(e.target.type!=="checkbox")return;const id=+e.target.dataset.id;const t=TASKS.find(x=>x.id===id);
+    if(e.target.checked===t.done)delete state[id];else state[id]=e.target.checked;save();render();
+  });
+  document.getElementById("reset").addEventListener("click",()=>{state={};try{localStorage.removeItem(KEY)}catch(e){}render()});
+  renderHeader();renderFilters();render();
+  setInterval(()=>{renderHeader();render()},60*60*1000);
+})();
+</script>
+</body>
+</html>
