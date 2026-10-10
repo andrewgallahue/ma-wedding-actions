@@ -18,14 +18,14 @@ try{if(window.self!==window.top)document.documentElement.classList.add("embedded
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-10.4";
+const SEATING_VERSION = "2026-10-10.5";
 const SEATING = {
   "g066":1,"g067":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
   "g075":2,"g076":2,"g077":2,"g082":2,"g016":3,"g017":3,"g119":3,"g120":3,
   "g121":3,"g122":3,"g124":3,"g125":3,"g126":3,"g127":3,"g011":4,"g013":4,
   "g018":4,"g019":4,"g020":4,"g021":4,"g022":4,"g023":4,"g150":4,"g151":4,
   "g002":5,"g003":5,"g005":5,"g007":5,"g008":5,"g009":5,"g078":5,"g079":5,
-  "g080":5,"g081":5,"g001":6,"g015":6,"g043":6,"g128":6,"g130":6,"g131":6,
+  "g080":5,"g081":5,"g015":6,"g043":6,"g128":6,"g129":6,"g130":6,"g131":6,
   "g132":6,"g133":6,"g134":6,"g136":6,"g024":7,"g027":7,"g029":7,"g030":7,
   "g031":7,"g032":7,"g033":7,"g034":7,"g035":7,"g036":7,"g037":8,"g038":8,
   "g041":8,"g042":8,"g047":8,"g048":8,"g049":8,"g050":8,"g051":8,"g052":8,
@@ -143,6 +143,7 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g126","f":"Elise","l":"Lucarelli"},
   {"id":"g127","f":"Jim","l":"Lucarelli"},
   {"id":"g128","f":"Virginia","l":"Lucarelli"},
+  {"id":"g129","f":"Max","l":"Lucarelli"},
   {"id":"g130","f":"Atlas","l":"Lucarelli","mn":1},
   {"id":"g131","f":"Nina","l":"Lucarelli"},
   {"id":"g132","f":"Peter","l":"Lucarelli"},
@@ -505,9 +506,10 @@ footer a{color:var(--teal);font-weight:600}
     const m=c.match(/MAS1\.([A-Za-z0-9_-]+)/);if(!m)return null;
     let b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
     const raw=atob(b),parts=raw.split("|"),ver=parts.length>1?parts[0]:"",s=parts.pop(),o={};
-    // codes made before 2026-10-10.4 used the old guest order (Max Lucarelli in, Dodi (mom) out)
+    // share codes store tables in GUESTS order; older versions had a different guest list
     let ids=GUESTS.map(g=>g.id);
-    if(ver&&ver<"2026-10-10.4"){ids=ids.filter(x=>x!=="g005");ids.splice(ids.indexOf("g128")+1,0,"g129")}
+    if(ver&&ver<"2026-10-10.4")ids=ids.filter(x=>x!=="g005");       // before Dodi (mom) was restored
+    else if(ver==="2026-10-10.4")ids=ids.filter(x=>x!=="g129");      // the version without Max Lucarelli
     ids.forEach((id,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t&&byId[id])o[id]=t});
     return o;
   }
