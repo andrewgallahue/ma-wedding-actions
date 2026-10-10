@@ -13,8 +13,8 @@
    To mark a task done: change done:false -> done:true on its line,
    then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
    and update LAST_UPDATED. */
-const DATA_VERSION = "2026-10-10.7";
-const LAST_UPDATED = "Sat Oct 10, 2026, 9:22 AM PT";
+const DATA_VERSION = "2026-10-10.8";
+const LAST_UPDATED = "Sat Oct 10, 2026, 9:30 AM PT";
 const WEDDING_DATE = "2026-10-25";
 const TASKS = [
   {id:1,  task:"Fill out Chuck's Final Guest Count form (Part 1: count 154, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
@@ -38,6 +38,7 @@ const TASKS = [
   {id:17, task:"Finalize Maddie's photo people list", category:"Photos", due:"2026-10-16", note:"Maddie is handling.", done:false},
   {id:18, task:"Day-of event insurance sent to Darlington", category:"Insurance", due:"2026-10-09", note:"", done:true},
   {id:19, task:"Nudge Bernardo for updated quote", category:"Alcohol", due:"2026-10-09", note:"", done:true},
+  {id:22, task:"Finalize Wheat & Water welcome-drinks slideshow: load all photos into the Apple shared album, with as many guests as we have pictures of", category:"Welcome drinks", due:"2026-10-17", note:"Photos live in Andrew's Apple shared album.", done:false},
 ];
 /* ============================================= */
 </script>
@@ -103,6 +104,26 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
 .seathead a{color:var(--teal);font-weight:600;font-size:14px}
 .seatframe{display:block;width:100%;height:85vh;min-height:560px;border:0;border-radius:16px;background:var(--cream);box-shadow:0 4px 18px rgba(15,82,87,.10)}
 @media (max-width:560px){.seatframe{height:90vh}.seathead h2{font-size:25px}.jump{font-size:13.5px;margin-left:0}}
+/* ---- drag-to-reschedule ---- */
+.hint{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:12.5px;color:var(--muted);margin:2px 4px 0}
+.hint b{color:var(--deep);font-weight:600}
+.hint button,.movedbtn{font:inherit;font-size:12px;font-weight:600;border:1.5px solid var(--coral);background:#fff;color:var(--sunset);padding:3px 11px;border-radius:999px;cursor:pointer}
+.group[data-day]{border-radius:14px;transition:background .15s,box-shadow .15s}
+.group.over{background:rgba(245,158,66,.16);box-shadow:0 0 0 2px var(--sun)}
+.group.over .ghead{color:var(--sunset)}
+.group.emptyday{margin-top:10px}
+.group.emptyday .ghead{margin-bottom:4px;opacity:.8}
+.dz{border:1.5px dashed #e6d4b0;border-radius:12px;padding:6px 12px;font-size:12.5px;color:#b59c72;text-align:center;background:rgba(255,255,255,.5)}
+.group.wed .ghead{color:var(--sunset)}
+.grip{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;justify-content:center;width:28px;margin:-13px -6px -13px -12px;padding-left:4px;color:#b89c6c;font-size:16px;letter-spacing:-3px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;border-radius:10px 0 0 10px}
+.grip:hover{color:var(--sun);background:rgba(245,158,66,.08)}
+@media (pointer:fine){.item{cursor:grab}.item .body{cursor:auto}}
+.item.dragsrc{opacity:.35}
+.ghost{position:fixed;left:0;top:0;z-index:1000;pointer-events:none;margin:0;opacity:.95;box-shadow:0 12px 30px rgba(15,82,87,.28);transform-origin:20px 20px;rotate:1.5deg}
+body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !important}
+.moved{font-weight:600;font-size:11.5px;color:var(--teal);background:#e3f4f2;border-radius:999px;padding:2px 9px;white-space:nowrap}
+@keyframes pop{0%{box-shadow:0 0 0 3px var(--sun)}100%{box-shadow:0 1px 6px rgba(0,0,0,.06)}}
+.item.justmoved{animation:pop 1.4s ease-out}
 </style>
 </head>
 <body>
@@ -144,6 +165,7 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
     <div class="bar"><div id="progBar"></div></div>
   </div>
   <div class="filters" id="filters"></div>
+  <div class="hint" id="hint"></div>
   <div id="list"></div>
 </main>
 <section class="seatsec" id="seating">
@@ -154,6 +176,7 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
   <div style="margin-bottom:6px"><a href="seating.html?v=2026-10-10.9" style="color:var(--teal);font-weight:600;font-size:14px">Seating chart (full screen) →</a></div>
   <div>Last updated: <span id="updated"></span></div>
   <div>Checkmarks you tap are saved on this device only. <button id="reset">Reset my checkmarks</button></div>
+  <div>Due dates you drag to a new day are saved on this device only. <button id="resetDates">Reset dates</button></div>
 </footer>
 <script>
 (function(){
@@ -164,12 +187,31 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({v:DATA_VERSION,o:state}))}catch(e){}};
   const isDone=t=>Object.prototype.hasOwnProperty.call(state,t.id)?state[t.id]:t.done;
 
+  /* Due-date overrides from drag-and-drop: {id:{due,baseDue}}.
+     Stored under their own key so they survive DATA_VERSION bumps. An override is
+     dropped only when the published due date no longer equals its baseDue
+     (i.e. the date was changed centrally in TASKS). */
+  const DKEY="maWeddingDueOverrides";
+  let moves={};
+  try{const m=JSON.parse(localStorage.getItem(DKEY)||"{}");if(m&&typeof m==="object"&&!Array.isArray(m))moves=m;}catch(e){}
+  function saveMoves(){try{if(Object.keys(moves).length)localStorage.setItem(DKEY,JSON.stringify(moves));else localStorage.removeItem(DKEY)}catch(e){}}
+  (function prune(){
+    let ch=false;
+    Object.keys(moves).forEach(id=>{
+      const t=TASKS.find(x=>String(x.id)===id),m=moves[id],pub=t?(t.due||""):null;
+      if(!t||!m||typeof m.due!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(m.due)||m.baseDue!==pub||m.due===pub){delete moves[id];ch=true}
+    });
+    if(ch)saveMoves();
+  })();
+  const dueOf=t=>moves[t.id]?moves[t.id].due:t.due;
+
   // today's date in Pacific time, as YYYY-MM-DD
   function todayPT(){
     const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
     const g=k=>p.find(x=>x.type===k).value;return g("year")+"-"+g("month")+"-"+g("day");
   }
   const dnum=s=>{const [y,m,d]=s.split("-").map(Number);return Date.UTC(y,m-1,d)/864e5};
+  const iso=n=>new Date(n*864e5).toISOString().slice(0,10);
   const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const fmt=s=>{const [y,m,d]=s.split("-").map(Number);const w=new Date(Date.UTC(y,m-1,d)).getUTCDay();return DOW[w]+" "+MON[m-1]+" "+d};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -187,42 +229,130 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
     const f=document.getElementById("filters");
     f.innerHTML=cats.map(c=>'<button class="'+(c===filter?"on":"")+'" data-c="'+esc(c)+'">'+esc(c)+'</button>').join("");
   }
+  function renderHint(){
+    const n=Object.keys(moves).length;
+    document.getElementById("hint").innerHTML='<span>🌴 Drag a task by its <b>⋮⋮</b> handle onto another day to change its date.</span>'+
+      (n?'<button class="movedbtn" data-reset-dates>↺ Reset dates ('+n+' moved)</button>':"");
+  }
+  function cardHTML(t,today){
+    const dn=isDone(t),due=dueOf(t),mv=moves[t.id];let cls="",flag="";
+    if(!dn&&due){const d=dnum(due)-today;if(d<0){cls="overdue";flag="Overdue"}else if(d<=3){cls="soon";flag=d===0?"Due today":d===1?"Due tomorrow":"Due in "+d+" days"}}
+    if(dn)cls="done";
+    return '<div class="item '+cls+'" data-id="'+t.id+'"><span class="grip" title="Drag to another day" aria-hidden="true">⋮⋮</span><input type="checkbox" aria-label="Mark done" data-id="'+t.id+'"'+(dn?" checked":"")+'>'+
+      '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta"><span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>'+
+      '<span class="due">'+(due?"Due "+fmt(due):"Anytime before wedding")+'</span>'+
+      (mv?'<span class="moved" title="You moved this on this device">↻ moved · was '+esc(mv.baseDue?fmt(mv.baseDue):"anytime")+'</span>':"")+
+      (flag?'<span class="flag">'+flag+'</span>':"")+'</div>'+
+      (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+'</div></div>';
+  }
   function render(){
-    const today=dnum(todayPT());
+    const todayS=todayPT(),today=dnum(todayS);
     const done=TASKS.filter(isDone).length;
     document.getElementById("progTxt").textContent=done+" of "+TASKS.length+" done";
     document.getElementById("progPct").textContent=Math.round(done/TASKS.length*100)+"%";
     document.getElementById("progBar").style.width=(done/TASKS.length*100)+"%";
+    renderHint();
 
     const items=TASKS.filter(t=>filter==="All"||t.category===filter).slice().sort((a,b)=>{
-      if(a.due===b.due)return a.id-b.id; if(!a.due)return 1; if(!b.due)return -1; return a.due<b.due?-1:1;});
-    const groups=[];
-    items.forEach(t=>{const k=t.due||"anytime";let g=groups[groups.length-1];if(!g||g.k!==k){g={k,items:[]};groups.push(g)}g.items.push(t)});
+      const x=dueOf(a),y=dueOf(b);
+      if(x===y)return a.id-b.id; if(!x)return 1; if(!y)return -1; return x<y?-1:1;});
+    // day buckets: every day from today through the wedding, plus any other day that has tasks
+    const byDay={};items.forEach(t=>{const k=dueOf(t)||"anytime";(byDay[k]=byDay[k]||[]).push(t)});
+    const keys=new Set(Object.keys(byDay).filter(k=>k!=="anytime"));
+    for(let n=today;n<=dnum(WEDDING_DATE);n++)keys.add(iso(n));
+    const order=[...keys].sort();if(byDay.anytime)order.push("anytime");
     const list=document.getElementById("list");
-    if(!items.length){list.innerHTML='<div class="empty">Nothing here.</div>';return}
-    list.innerHTML=groups.map(g=>{
-      let label,hot=false;
-      if(g.k==="anytime")label="Anytime before wedding";
-      else{const d=dnum(g.k)-today;label=fmt(g.k)+(d===0?" · Today":d===1?" · Tomorrow":d<0?" · Past":" · in "+d+" days");hot=d<=3&&g.items.some(t=>!isDone(t))}
-      return '<section class="group"><h2 class="ghead'+(hot?" hot":"")+'">'+label+'</h2>'+g.items.map(t=>{
-        const dn=isDone(t);let cls="",flag="";
-        if(!dn&&t.due){const d=dnum(t.due)-today;if(d<0){cls="overdue";flag="Overdue"}else if(d<=3){cls="soon";flag=d===0?"Due today":d===1?"Due tomorrow":"Due in "+d+" days"}}
-        if(dn)cls="done";
-        return '<div class="item '+cls+'"><input type="checkbox" aria-label="Mark done" data-id="'+t.id+'"'+(dn?" checked":"")+'>'+
-          '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta"><span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>'+
-          '<span class="due">'+(t.due?"Due "+fmt(t.due):"Anytime before wedding")+'</span>'+(flag?'<span class="flag">'+flag+'</span>':"")+'</div>'+
-          (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+'</div></div>';
-      }).join("")+'</section>';
+    list.innerHTML=order.map(k=>{
+      const g=byDay[k]||[];
+      if(k==="anytime")return '<section class="group"><h2 class="ghead">Anytime before wedding</h2>'+g.map(t=>cardHTML(t,today)).join("")+'</section>';
+      const d=dnum(k)-today,wed=k===WEDDING_DATE;
+      const label=fmt(k)+(wed?" · Wedding day 💍":d===0?" · Today":d===1?" · Tomorrow":d<0?" · Past":" · in "+d+" days");
+      const hot=d<=3&&g.some(t=>!isDone(t));
+      return '<section class="group'+(g.length?"":" emptyday")+(wed?" wed":"")+'" data-day="'+k+'"><h2 class="ghead'+(hot?" hot":"")+'">'+label+'</h2>'+
+        (g.length?g.map(t=>cardHTML(t,today)).join(""):'<div class="dz">'+(wed?"Just get married 💛":"Nothing due · drop a task here")+'</div>')+'</section>';
     }).join("");
   }
+
+  /* ---------- drag & drop (Pointer Events: mouse, touch, pen) ---------- */
+  const list=document.getElementById("list");
+  let drag=null,lastDrop=0;
+  // swallow the stray click that can follow a drag
+  window.addEventListener("click",e=>{if(Date.now()-lastDrop<350){e.stopPropagation();e.preventDefault()}},true);
+  list.addEventListener("pointerdown",e=>{
+    if(drag||(e.button!==undefined&&e.button!==0))return;
+    const card=e.target.closest(".item[data-id]");if(!card)return;
+    const onGrip=!!e.target.closest(".grip");
+    // touch/pen: only the handle starts a drag (so the page still scrolls); mouse: whole card
+    if(!onGrip&&(e.pointerType!=="mouse"||e.target.closest("input,a,button")))return;
+    drag={card,id:+card.dataset.id,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,pid:e.pointerId,started:false,over:null};
+    if(onGrip){e.preventDefault();startDrag();}
+  });
+  window.addEventListener("pointermove",e=>{
+    if(!drag||e.pointerId!==drag.pid)return;
+    if(!drag.started){if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<6)return;startDrag();}
+    e.preventDefault();moveDrag(e.clientX,e.clientY);
+  },{passive:false});
+  window.addEventListener("pointerup",e=>{if(drag&&e.pointerId===drag.pid)endDrag(true)});
+  window.addEventListener("pointercancel",e=>{if(drag&&e.pointerId===drag.pid)endDrag(false)});
+  window.addEventListener("keydown",e=>{if(drag&&e.key==="Escape")endDrag(false)});
+  // block iOS touch scrolling while dragging
+  document.addEventListener("touchmove",e=>{if(drag&&drag.started)e.preventDefault()},{passive:false});
+
+  function startDrag(){
+    drag.started=true;
+    const r=drag.card.getBoundingClientRect();
+    drag.dx=drag.x0-r.left;drag.dy=drag.y0-r.top;
+    const g=drag.card.cloneNode(true);g.classList.add("ghost");g.classList.remove("justmoved");g.style.width=r.width+"px";
+    document.body.appendChild(g);drag.ghost=g;
+    drag.card.classList.add("dragsrc");document.body.classList.add("dnd");
+    try{window.getSelection().removeAllRanges()}catch(_){}
+    moveDrag(drag.x0,drag.y0);
+    const tick=()=>{if(!drag||!drag.started)return;
+      const edge=70,h=window.innerHeight;let v=0;
+      if(drag.ly<edge)v=-Math.ceil((edge-drag.ly)/4);else if(drag.ly>h-edge)v=Math.ceil((drag.ly-(h-edge))/4);
+      if(v){window.scrollBy(0,v);hitTest();}
+      drag.raf=requestAnimationFrame(tick);};
+    drag.raf=requestAnimationFrame(tick);
+  }
+  function moveDrag(x,y){
+    drag.lx=x;drag.ly=y;
+    drag.ghost.style.transform="translate("+(x-drag.dx)+"px,"+(y-drag.dy)+"px)";
+    hitTest();
+  }
+  function hitTest(){
+    const el=document.elementFromPoint(drag.lx,drag.ly);
+    const sec=el&&el.closest?el.closest("#list .group[data-day]"):null;
+    if(sec!==drag.over){if(drag.over)drag.over.classList.remove("over");if(sec)sec.classList.add("over");drag.over=sec;}
+  }
+  function endDrag(commit){
+    const d=drag;drag=null;if(!d.started)return;
+    lastDrop=Date.now();
+    cancelAnimationFrame(d.raf);
+    d.ghost.remove();d.card.classList.remove("dragsrc");document.body.classList.remove("dnd");
+    if(d.over)d.over.classList.remove("over");
+    if(!commit||!d.over)return;
+    const day=d.over.dataset.day,t=TASKS.find(x=>x.id===d.id);
+    if(!t||day===dueOf(t))return;
+    if(day===(t.due||""))delete moves[t.id];else moves[t.id]={due:day,baseDue:t.due||""};
+    saveMoves();render();
+    const c=list.querySelector('.item[data-id="'+t.id+'"]');if(c)c.classList.add("justmoved");
+  }
+  function resetDates(){
+    if(!Object.keys(moves).length)return;
+    if(!confirm("Put all dragged tasks back on their original dates?"))return;
+    moves={};saveMoves();render();
+  }
+
   document.getElementById("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.c;renderFilters();render()});
-  document.getElementById("list").addEventListener("change",e=>{
+  document.getElementById("hint").addEventListener("click",e=>{if(e.target.closest("[data-reset-dates]"))resetDates()});
+  list.addEventListener("change",e=>{
     if(e.target.type!=="checkbox")return;const id=+e.target.dataset.id;const t=TASKS.find(x=>x.id===id);
     if(e.target.checked===t.done)delete state[id];else state[id]=e.target.checked;save();render();
   });
   document.getElementById("reset").addEventListener("click",()=>{state={};try{localStorage.removeItem(KEY)}catch(e){}render()});
+  document.getElementById("resetDates").addEventListener("click",resetDates);
   renderHeader();renderFilters();render();
-  setInterval(()=>{renderHeader();render()},60*60*1000);
+  setInterval(()=>{if(drag)return;renderHeader();render()},60*60*1000);
 })();
 </script>
 </body>
