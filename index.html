@@ -94,6 +94,13 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
  .sub{font-size:13.5px}
  .count{font-size:14px}
 }
+.jump{display:inline-block;margin:10px 0 0 8px;background:rgba(15,82,87,.88);color:#fff;font-weight:600;padding:6px 14px;border-radius:999px;font-size:14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.seatsec{max-width:1400px;margin:10px auto 0;padding:0 14px 10px;scroll-margin-top:10px}
+.seathead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 4px 10px}
+.seathead h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:30px;color:var(--deep);margin:0}
+.seathead a{color:var(--teal);font-weight:600;font-size:14px}
+.seatframe{display:block;width:100%;height:85vh;min-height:560px;border:0;border-radius:16px;background:var(--cream);box-shadow:0 4px 18px rgba(15,82,87,.10)}
+@media (max-width:560px){.seatframe{height:90vh}.seathead h2{font-size:25px}.jump{font-size:13.5px;margin-left:0}}
 </style>
 </head>
 <body>
@@ -123,6 +130,7 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
     <h1>Andrew &amp; Maddie's Wedding Actions</h1>
     <p class="sub">Oct 25, 2026 · Darlington House, La Jolla</p>
     <div class="count" id="count"></div>
+    <a class="jump" href="#seating">🪑 Seating chart ↓</a>
   </div>
   <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 20 C150 0 300 40 450 20 S750 0 900 20 S1100 40 1200 18 V40 H0Z" fill="#fffaf0"/>
@@ -136,8 +144,12 @@ footer button{font:inherit;font-size:12px;background:none;border:none;color:var(
   <div class="filters" id="filters"></div>
   <div id="list"></div>
 </main>
+<section class="seatsec" id="seating">
+  <div class="seathead"><h2>Seating Chart</h2><a href="seating.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
+  <iframe class="seatframe" src="seating.html" title="Andrew &amp; Maddie's Seating Chart"></iframe>
+</section>
 <footer>
-  <div style="margin-bottom:6px"><a href="seating.html" style="color:var(--teal);font-weight:600;font-size:14px">Seating chart →</a></div>
+  <div style="margin-bottom:6px"><a href="seating.html" style="color:var(--teal);font-weight:600;font-size:14px">Seating chart (full screen) →</a></div>
   <div>Last updated: <span id="updated"></span></div>
   <div>Checkmarks you tap are saved on this device only. <button id="reset">Reset my checkmarks</button></div>
 </footer>

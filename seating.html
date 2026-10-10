@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
+/* Embedded in the actions page? Hide the big header there. */
+try{if(window.self!==window.top)document.documentElement.classList.add("embedded")}catch(e){document.documentElement.classList.add("embedded")}
+</script>
+<script>
 /* ================= SHARED BASELINE =================
    SEATING is the published draft everyone starts from: { guestId: tableNumber }.
    Guests not listed are unassigned. To publish someone's arrangement, paste the
@@ -314,6 +318,9 @@ dialog p{font-size:13px;color:var(--muted);margin:4px 0 8px}
 footer{text-align:center;font-size:12.5px;color:var(--muted);padding:10px 16px 34px}
 footer a{color:var(--teal);font-weight:600}
 .printhead{display:none}
+.embedded header,.embedded footer{display:none}
+.embedded .wrap{margin-top:0;padding-top:10px}
+.embedded body{background:var(--cream)}
 @media (max-width:860px){
  .layout{grid-template-columns:1fr}
  aside{position:static;max-height:none;order:2}
