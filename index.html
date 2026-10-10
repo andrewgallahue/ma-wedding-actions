@@ -14,8 +14,8 @@
    (optional fields: link:"https://...", linkText:"label")
    then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
    and update LAST_UPDATED. */
-const DATA_VERSION = "2026-10-10.11";
-const LAST_UPDATED = "Sat Oct 10, 2026, 9:38 AM PT";
+const DATA_VERSION = "2026-10-10.12";
+const LAST_UPDATED = "Sat Oct 10, 2026, 9:42 AM PT";
 const WEDDING_DATE = "2026-10-25";
 const TASKS = [
   {id:1,  task:"Fill out Chuck's Final Guest Count form, Part 1 (count, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
@@ -81,9 +81,9 @@ main{max-width:740px;margin:-26px auto 0;padding:0 14px 24px;position:relative;z
 .item.overdue{border-left-color:#d64545;background:#fff0ec}
 .item.done{opacity:.5;background:#fff;border-left-color:transparent}
 .item.done .t{text-decoration:line-through}
-.item input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--teal);border-radius:6px;cursor:pointer;display:grid;place-items:center;background:#fff}
-.item input:checked{background:var(--teal)}
-.item input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.item>input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--teal);border-radius:6px;cursor:pointer;display:grid;place-items:center;background:#fff}
+.item>input[type=checkbox]:checked{background:var(--teal)}
+.item>input[type=checkbox]:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
 .body{flex:1;min-width:0}
 .t{font-weight:500;font-size:19px;line-height:1.3;overflow-wrap:anywhere}
 .meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:4px;font-size:15px}
@@ -127,6 +127,24 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
 .moved{font-weight:600;font-size:13.5px;color:var(--teal);background:#e3f4f2;border-radius:999px;padding:0 9px;white-space:nowrap}
 @keyframes pop{0%{box-shadow:0 0 0 3px var(--sun)}100%{box-shadow:0 1px 6px rgba(0,0,0,.06)}}
 .item.justmoved{animation:pop 1.4s ease-out}
+/* editing */
+.hbtns{display:inline-flex;flex-wrap:wrap;gap:6px}
+.addbtn{font-size:14.5px;font-weight:600;font-style:normal;border:1px solid var(--teal);background:var(--teal);color:#fff;padding:1px 12px;border-radius:999px;cursor:pointer}
+.editbtn{flex:0 0 auto;align-self:flex-start;width:34px;height:34px;margin:-6px -8px -6px 0;border:none;background:none;border-radius:999px;color:#b9a88a;font-size:19px;line-height:1;cursor:pointer}
+.editbtn:hover,.editbtn:focus-visible{color:var(--teal);background:#eef7f6}
+button.moved{border:none;cursor:pointer;font-family:inherit}
+.item.editing{display:block;background:#fff;border-left-color:var(--teal);cursor:auto}
+.newform{margin-top:12px}
+.editform label{display:block;font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.editform textarea,.editform input{display:block;width:100%;margin-top:3px;font:inherit;font-size:17px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink);border:1px solid #e2d3b5;border-radius:10px;padding:7px 10px;background:#fffdf8;resize:vertical}
+.editform textarea:focus,.editform input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(31,138,138,.15)}
+.editform .row{display:flex;gap:10px;flex-wrap:wrap}.editform .row label{flex:1 1 150px}
+.editform .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.editform .btns button{font-size:16px;font-weight:600;padding:6px 16px;border-radius:999px;border:1px solid #e2d3b5;background:#fff;color:var(--ink);cursor:pointer;min-height:38px}
+.editform .btns .save{background:var(--deep);border-color:var(--deep);color:#fff}
+.editform .btns .warn{color:#c23a3a;border-color:#efc2b5;margin-left:auto}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:var(--deep);color:#fff;padding:8px 18px;border-radius:999px;font-size:16px;box-shadow:0 6px 20px rgba(0,0,0,.2);transition:.25s;pointer-events:none;z-index:2000;max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -175,7 +193,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
 </section>
 <footer>
   <div>Updated <span id="updated"></span></div>
-  <div>Checkmarks and dragged dates are saved on this device only · <button id="reset">Reset checkmarks</button> · <button id="resetDates">Reset dates</button></div>
+  <div>Checkmarks, moves and edits are saved on this device only · <button id="exportBtn">Export changes</button></div>
+  <div><button id="reset">Reset checkmarks</button> · <button id="resetDates">Reset dates</button> · <button id="resetEdits">Reset edits</button></div>
 </footer>
 <script>
 (function(){
@@ -184,25 +203,44 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   let state={};
   try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.v===DATA_VERSION)state=s.o||{};else localStorage.removeItem(KEY);}catch(e){}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({v:DATA_VERSION,o:state}))}catch(e){}};
-  const isDone=t=>Object.prototype.hasOwnProperty.call(state,t.id)?state[t.id]:t.done;
+  const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 
-  /* Due-date overrides from drag-and-drop: {id:{due,baseDue}}.
-     Stored under their own key so they survive DATA_VERSION bumps. An override is
-     dropped only when the published due date no longer equals its baseDue
-     (i.e. the date was changed centrally in TASKS). */
-  const DKEY="maWeddingDueOverrides";
-  let moves={};
-  try{const m=JSON.parse(localStorage.getItem(DKEY)||"{}");if(m&&typeof m==="object"&&!Array.isArray(m))moves=m;}catch(e){}
-  function saveMoves(){try{if(Object.keys(moves).length)localStorage.setItem(DKEY,JSON.stringify(moves));else localStorage.removeItem(DKEY)}catch(e){}}
+  /* Local changes live under their own keys so they survive DATA_VERSION bumps.
+     - due-date moves: maWeddingDueOverrides = {id:{due,baseDue}}
+     - text edits:     maWeddingEdits = {e:{id:{task,note,category,base:{task,note,category}}}, a:[added tasks]}
+     A move/edit is dropped only when the published task changed centrally from its base. */
+  const DKEY="maWeddingDueOverrides",EKEY="maWeddingEdits";
+  const load=k=>{try{const m=JSON.parse(localStorage.getItem(k)||"null");return m&&typeof m==="object"&&!Array.isArray(m)?m:null}catch(e){return null}};
+  const put=(k,v,empty)=>{try{if(empty)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  let moves=load(DKEY)||{};
+  let ed=load(EKEY)||{};let edits=ed.e&&typeof ed.e==="object"?ed.e:{};let added=Array.isArray(ed.a)?ed.a.filter(a=>a&&a.id&&typeof a.task==="string"):[];
+  function saveMoves(){put(DKEY,moves,!Object.keys(moves).length)}
+  function saveEdits(){put(EKEY,{e:edits,a:added},!Object.keys(edits).length&&!added.length)}
+  const pubOf=t=>({task:t.task||"",note:t.note||"",category:t.category||""});
   (function prune(){
     let ch=false;
     Object.keys(moves).forEach(id=>{
       const t=TASKS.find(x=>String(x.id)===id),m=moves[id],pub=t?(t.due||""):null;
       if(!t||!m||typeof m.due!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(m.due)||m.baseDue!==pub||m.due===pub){delete moves[id];ch=true}
     });
-    if(ch)saveMoves();
+    if(ch)saveMoves();ch=false;
+    Object.keys(edits).forEach(id=>{
+      const t=TASKS.find(x=>String(x.id)===id),e=edits[id];
+      if(!t||!e||!e.base){delete edits[id];ch=true;return}
+      const p=pubOf(t);
+      if(e.base.task!==p.task||e.base.note!==p.note||(e.base.category||p.category)!==p.category){delete edits[id];ch=true}
+    });
+    if(ch)saveEdits();
   })();
-  const dueOf=t=>moves[t.id]?moves[t.id].due:t.due;
+
+  // effective task list = published tasks with local edits applied + locally added tasks
+  function all(){
+    return TASKS.map(t=>{const e=edits[t.id];return e?Object.assign({},t,{task:e.task,note:e.note,category:e.category||t.category,_edited:true}):t})
+      .concat(added.map(a=>Object.assign({},a,{_added:true})));
+  }
+  const find=id=>all().find(t=>String(t.id)===String(id));
+  const isDone=t=>t._added?!!t.done:has(state,t.id)?state[t.id]:t.done;
+  const dueOf=t=>t._added?t.due:moves[t.id]?moves[t.id].due:t.due;
 
   // today's date in Pacific time, as YYYY-MM-DD
   function todayPT(){
@@ -216,8 +254,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const linkify=s=>esc(s).replace(/https?:\/\/[^\s)]+/g,u=>'<a href="'+u+'" target="_blank" rel="noopener">'+u.replace(/^https?:\/\//,"")+'</a>');
 
-  let filter="All";
-  const cats=["All"].concat([...new Set(TASKS.map(t=>t.category))]);
+  let filter="All",editing=null; // editing: task id (string) or "new"
+  const catList=()=>[...new Set(all().map(t=>t.category).filter(Boolean))];
 
   function renderHeader(){
     const diff=dnum(WEDDING_DATE)-dnum(todayPT());
@@ -225,43 +263,62 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
     document.getElementById("updated").textContent=LAST_UPDATED;
   }
   function renderFilters(){
-    const f=document.getElementById("filters");
-    f.innerHTML=cats.map(c=>'<button class="'+(c===filter?"on":"")+'" data-c="'+esc(c)+'">'+esc(c)+'</button>').join("");
+    const cats=["All"].concat(catList());if(!cats.includes(filter))filter="All";
+    document.getElementById("filters").innerHTML=cats.map(c=>'<button class="'+(c===filter?"on":"")+'" data-c="'+esc(c)+'">'+esc(c)+'</button>').join("");
   }
+  function changeCount(){return Object.keys(moves).length+Object.keys(edits).length+added.length}
   function renderHint(){
-    const n=Object.keys(moves).length;
-    document.getElementById("hint").innerHTML='<span>Drag a task (⋮⋮) to another day to move it.</span>'+
-      (n?'<button class="movedbtn" data-reset-dates>↺ Reset '+n+' moved</button>':"");
+    const n=Object.keys(moves).length,c=changeCount();
+    document.getElementById("hint").innerHTML='<span>Drag (⋮⋮) to move a day · ✎ to edit.</span>'+
+      '<span class="hbtns"><button class="addbtn" data-add>+ Add action</button>'+
+      (n?'<button class="movedbtn" data-reset-dates>↺ Reset '+n+' moved</button>':"")+
+      (c?'<button class="movedbtn" data-export>⧉ Export changes ('+c+')</button>':"")+'</span>';
+  }
+  function formHTML(t){
+    const isNew=!t,cat=t?t.category:(filter!=="All"?filter:"");
+    const day=t?dueOf(t):todayPT();
+    const opts=catList();if(cat&&!opts.includes(cat))opts.push(cat);
+    return '<form class="editform" data-edit="'+(isNew?"new":esc(t.id))+'">'+
+      '<label>Action<textarea name="task" rows="2" required>'+esc(t?t.task:"")+'</textarea></label>'+
+      '<label>Note<textarea name="note" rows="2" placeholder="Optional">'+esc(t?t.note||"":"")+'</textarea></label>'+
+      '<div class="row"><label>Category<input name="category" list="catopts" value="'+esc(cat)+'" placeholder="e.g. Texts"></label>'+
+      ((isNew||t._added)?'<label>Day<input type="date" name="due" value="'+esc(day||"")+'"></label>':"")+'</div>'+
+      '<datalist id="catopts">'+opts.map(c=>'<option value="'+esc(c)+'">').join("")+'</datalist>'+
+      '<div class="btns"><button type="submit" class="save">Save</button><button type="button" data-cancel>Cancel</button>'+
+      (t&&t._edited?'<button type="button" class="warn" data-revert="'+esc(t.id)+'">Revert to original</button>':"")+
+      (t&&t._added?'<button type="button" class="warn" data-delete="'+esc(t.id)+'">Delete</button>':"")+'</div></form>';
   }
   function cardHTML(t,today){
-    const dn=isDone(t),due=dueOf(t),mv=moves[t.id];let cls="",flag="";
+    const id=esc(t.id);
+    if(editing!==null&&String(editing)===String(t.id))return '<div class="item editing" data-id="'+id+'">'+formHTML(t)+'</div>';
+    const dn=isDone(t),due=dueOf(t),mv=!t._added&&moves[t.id];let cls="",flag="";
     if(!dn&&due){const d=dnum(due)-today;if(d<0){cls="overdue";flag="Overdue"}else if(d<=3){cls="soon";flag=d===0?"Due today":d===1?"Due tomorrow":"Due in "+d+" days"}}
     if(dn)cls="done";
-    return '<div class="item '+cls+'" data-id="'+t.id+'"><span class="grip" title="Drag to another day" aria-hidden="true">⋮⋮</span><input type="checkbox" aria-label="Mark done" data-id="'+t.id+'"'+(dn?" checked":"")+'>'+
-      '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta"><span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>'+
+    return '<div class="item '+cls+'" data-id="'+id+'"><span class="grip" title="Drag to another day" aria-hidden="true">⋮⋮</span><input type="checkbox" aria-label="Mark done" data-id="'+id+'"'+(dn?" checked":"")+'>'+
+      '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta">'+(t.category?'<span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>':"")+
       (mv?'<span class="moved" title="You moved this on this device">moved · was '+esc(mv.baseDue?fmt(mv.baseDue):"anytime")+'</span>':"")+
+      (t._edited?'<button class="moved rv" data-revert="'+id+'" title="Revert to the original text">edited · revert</button>':"")+(t._added?'<span class="moved">added</span>':"")+
       (flag?'<span class="flag">'+flag+'</span>':"")+'</div>'+
       (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+
-      (t.link?'<a class="lnk" href="'+esc(t.link)+'" target="_blank" rel="noopener">'+esc(t.linkText||"Open link")+' ↗</a>':"")+'</div></div>';
+      (t.link?'<a class="lnk" href="'+esc(t.link)+'" target="_blank" rel="noopener">'+esc(t.linkText||"Open link")+' ↗</a>':"")+'</div>'+
+      '<button class="editbtn" data-editbtn="'+id+'" aria-label="Edit" title="Edit">✎</button></div>';
   }
   function render(){
-    const todayS=todayPT(),today=dnum(todayS);
-    const done=TASKS.filter(isDone).length;
-    document.getElementById("progTxt").textContent=done+" of "+TASKS.length+" done";
-    document.getElementById("progPct").textContent=Math.round(done/TASKS.length*100)+"%";
-    document.getElementById("progBar").style.width=(done/TASKS.length*100)+"%";
+    const today=dnum(todayPT());
+    const A=all(),done=A.filter(isDone).length;
+    document.getElementById("progTxt").textContent=done+" of "+A.length+" done";
+    document.getElementById("progPct").textContent=Math.round(done/A.length*100)+"%";
+    document.getElementById("progBar").style.width=(done/A.length*100)+"%";
     renderHint();
-
-    const items=TASKS.filter(t=>filter==="All"||t.category===filter).slice().sort((a,b)=>{
-      const x=dueOf(a),y=dueOf(b);
-      if(x===y)return a.id-b.id; if(!x)return 1; if(!y)return -1; return x<y?-1:1;});
-    // day buckets: every day from today through the wedding, plus any other day that has tasks
+    const items=A.filter(t=>filter==="All"||t.category===filter).sort((a,b)=>{
+      const x=dueOf(a)||"",y=dueOf(b)||"";
+      if(x===y)return (a._added?1:0)-(b._added?1:0)||(a._added?String(a.id).localeCompare(String(b.id)):a.id-b.id); if(!x)return 1; if(!y)return -1; return x<y?-1:1;});
     const byDay={};items.forEach(t=>{const k=dueOf(t)||"anytime";(byDay[k]=byDay[k]||[]).push(t)});
     const keys=new Set(Object.keys(byDay).filter(k=>k!=="anytime"));
     for(let n=today;n<=dnum(WEDDING_DATE);n++)keys.add(iso(n));
     const order=[...keys].sort();if(byDay.anytime)order.push("anytime");
     const list=document.getElementById("list");
-    list.innerHTML=order.map(k=>{
+    list.innerHTML=(editing==="new"?'<div class="item editing newform">'+formHTML(null)+'</div>':"")+order.map(k=>{
       const g=byDay[k]||[];
       if(k==="anytime")return '<section class="group"><h2 class="ghead">Anytime before wedding</h2>'+g.map(t=>cardHTML(t,today)).join("")+'</section>';
       const d=dnum(k)-today,wed=k===WEDDING_DATE;
@@ -271,19 +328,65 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
         (g.length?g.map(t=>cardHTML(t,today)).join(""):'<div class="dz">'+(wed?"Just get married 💛":"Nothing due · drop a task here")+'</div>')+'</section>';
     }).join("");
   }
+  function openEditor(id){
+    editing=id;render();
+    const f=document.querySelector(".editform");if(!f)return;
+    f.scrollIntoView({block:"nearest",behavior:"smooth"});
+    const ta=f.querySelector("textarea");if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length)}
+  }
+  function closeEditor(){editing=null;renderFilters();render()}
+  function saveForm(f){
+    const v=n=>f.elements[n]?f.elements[n].value.trim():"";
+    const task=v("task").replace(/\s+/g," ");if(!task){f.elements.task.focus();return}
+    const note=v("note"),category=v("category"),key=f.dataset.edit;
+    if(key==="new"){
+      added.push({id:"n"+Date.now().toString(36),task,note,category,due:v("due")||todayPT(),done:false});
+    }else{
+      const a=added.find(x=>String(x.id)===key);
+      if(a){Object.assign(a,{task,note,category,due:v("due")||a.due})}
+      else{
+        const t=TASKS.find(x=>String(x.id)===key);if(!t)return;
+        const p=pubOf(t),n={task,note,category:category||p.category};
+        if(n.task===p.task&&n.note===p.note&&n.category===p.category)delete edits[key];
+        else edits[key]=Object.assign(n,{base:p});
+      }
+    }
+    saveEdits();const flash=key==="new"?added[added.length-1].id:key;closeEditor();
+    const c=document.querySelector('.item[data-id="'+flash+'"]');if(c){c.classList.add("justmoved");c.scrollIntoView({block:"nearest"})}
+  }
+
+  /* ---------- export ---------- */
+  function exportText(){
+    const L=[],q=s=>JSON.stringify(s);
+    Object.keys(edits).forEach(id=>{const e=edits[id],b=e.base,ch=[];
+      if(e.task!==b.task)ch.push("task: "+q(e.task));if(e.note!==b.note)ch.push("note: "+q(e.note));if(e.category!==b.category)ch.push("category: "+q(e.category));
+      L.push("EDIT #"+id+" ("+(b.task.length>48?b.task.slice(0,46)+"…":b.task)+"): "+ch.join("; "))});
+    Object.keys(moves).forEach(id=>{const t=TASKS.find(x=>String(x.id)===id);L.push("MOVE #"+id+" ("+(t?t.task.slice(0,40):"")+"): "+moves[id].baseDue+" -> "+moves[id].due)});
+    added.forEach(a=>L.push("ADD: "+q(a.task)+" | category "+q(a.category)+" | due "+a.due+(a.note?" | note "+q(a.note):"")+(a.done?" | done":"")));
+    Object.keys(state).forEach(id=>{const t=TASKS.find(x=>String(x.id)===id);if(t&&state[id]!==t.done)L.push((state[id]?"DONE":"UNDONE")+" #"+id+" ("+t.task.slice(0,40)+")")});
+    const json=JSON.stringify({v:DATA_VERSION,edits:Object.fromEntries(Object.entries(edits).map(([k,e])=>[k,{task:e.task,note:e.note,category:e.category}])),moves:Object.fromEntries(Object.entries(moves).map(([k,m])=>[k,m.due])),added:added.map(({id,...r})=>r),checks:state});
+    return {n:L.length,text:"Wedding tracker changes from Andrew ("+new Date().toLocaleString("en-US",{timeZone:"America/Los_Angeles",dateStyle:"medium",timeStyle:"short"})+" PT, data "+DATA_VERSION+")\n"+(L.length?L.join("\n"):"(no changes)")+"\n\nJSON: "+json};
+  }
+  function toast(msg){let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";document.body.appendChild(t)}
+    t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600)}
+  function legacyCopy(s){const ta=document.createElement("textarea");ta.value=s;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,s.length);let ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();return ok}
+  function doExport(){
+    const r=exportText();window.__lastExport=r.text;
+    const done=()=>toast("Copied "+r.n+" change"+(r.n===1?"":"s")+" · paste it to Grok Bot to publish");
+    const fail=()=>{if(legacyCopy(r.text))done();else window.prompt("Copy this and send it:",r.text)};
+    if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(r.text).then(done,fail);else fail();
+  }
 
   /* ---------- drag & drop (Pointer Events: mouse, touch, pen) ---------- */
   const list=document.getElementById("list");
   let drag=null,lastDrop=0;
-  // swallow the stray click that can follow a drag
   window.addEventListener("click",e=>{if(Date.now()-lastDrop<350){e.stopPropagation();e.preventDefault()}},true);
   list.addEventListener("pointerdown",e=>{
-    if(drag||(e.button!==undefined&&e.button!==0))return;
-    const card=e.target.closest(".item[data-id]");if(!card)return;
+    if(drag||editing!==null||(e.button!==undefined&&e.button!==0))return;
+    const card=e.target.closest(".item[data-id]");if(!card||card.classList.contains("editing"))return;
     const onGrip=!!e.target.closest(".grip");
-    // touch/pen: only the handle starts a drag (so the page still scrolls); mouse: whole card
-    if(!onGrip&&(e.pointerType!=="mouse"||e.target.closest("input,a,button")))return;
-    drag={card,id:+card.dataset.id,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,pid:e.pointerId,started:false,over:null};
+    if(!onGrip&&(e.pointerType!=="mouse"||e.target.closest("input,a,button,textarea,select")))return;
+    drag={card,id:card.dataset.id,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,pid:e.pointerId,started:false,over:null};
     if(onGrip){e.preventDefault();startDrag();}
   });
   window.addEventListener("pointermove",e=>{
@@ -293,10 +396,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   },{passive:false});
   window.addEventListener("pointerup",e=>{if(drag&&e.pointerId===drag.pid)endDrag(true)});
   window.addEventListener("pointercancel",e=>{if(drag&&e.pointerId===drag.pid)endDrag(false)});
-  window.addEventListener("keydown",e=>{if(drag&&e.key==="Escape")endDrag(false)});
-  // block iOS touch scrolling while dragging
+  window.addEventListener("keydown",e=>{if(drag&&e.key==="Escape")endDrag(false);else if(editing!==null&&e.key==="Escape")closeEditor()});
   document.addEventListener("touchmove",e=>{if(drag&&drag.started)e.preventDefault()},{passive:false});
-
   function startDrag(){
     drag.started=true;
     const r=drag.card.getBoundingClientRect();
@@ -313,11 +414,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
       drag.raf=requestAnimationFrame(tick);};
     drag.raf=requestAnimationFrame(tick);
   }
-  function moveDrag(x,y){
-    drag.lx=x;drag.ly=y;
-    drag.ghost.style.transform="translate("+(x-drag.dx)+"px,"+(y-drag.dy)+"px)";
-    hitTest();
-  }
+  function moveDrag(x,y){drag.lx=x;drag.ly=y;drag.ghost.style.transform="translate("+(x-drag.dx)+"px,"+(y-drag.dy)+"px)";hitTest()}
   function hitTest(){
     const el=document.elementFromPoint(drag.lx,drag.ly);
     const sec=el&&el.closest?el.closest("#list .group[data-day]"):null;
@@ -330,28 +427,52 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
     d.ghost.remove();d.card.classList.remove("dragsrc");document.body.classList.remove("dnd");
     if(d.over)d.over.classList.remove("over");
     if(!commit||!d.over)return;
-    const day=d.over.dataset.day,t=TASKS.find(x=>x.id===d.id);
+    const day=d.over.dataset.day,t=find(d.id);
     if(!t||day===dueOf(t))return;
-    if(day===(t.due||""))delete moves[t.id];else moves[t.id]={due:day,baseDue:t.due||""};
-    saveMoves();render();
-    const c=list.querySelector('.item[data-id="'+t.id+'"]');if(c)c.classList.add("justmoved");
+    if(t._added){const a=added.find(x=>String(x.id)===d.id);a.due=day;saveEdits()}
+    else{if(day===(t.due||""))delete moves[t.id];else moves[t.id]={due:day,baseDue:t.due||""};saveMoves()}
+    render();
+    const c=list.querySelector('.item[data-id="'+d.id+'"]');if(c)c.classList.add("justmoved");
   }
   function resetDates(){
     if(!Object.keys(moves).length)return;
     if(!confirm("Put all dragged tasks back on their original dates?"))return;
     moves={};saveMoves();render();
   }
+  function resetEdits(){
+    if(!Object.keys(edits).length&&!added.length)return;
+    if(!confirm("Undo all your text edits and delete actions you added on this device?"))return;
+    edits={};added=[];saveEdits();editing=null;renderFilters();render();
+  }
 
   document.getElementById("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.c;renderFilters();render()});
-  document.getElementById("hint").addEventListener("click",e=>{if(e.target.closest("[data-reset-dates]"))resetDates()});
+  document.getElementById("hint").addEventListener("click",e=>{
+    if(e.target.closest("[data-reset-dates]"))resetDates();
+    else if(e.target.closest("[data-export]"))doExport();
+    else if(e.target.closest("[data-add]"))openEditor("new");
+  });
+  list.addEventListener("click",e=>{
+    const b=e.target.closest("[data-editbtn],[data-cancel],[data-revert],[data-delete]");if(!b)return;
+    e.preventDefault();
+    if(b.dataset.editbtn!==undefined)openEditor(b.dataset.editbtn);
+    else if(b.hasAttribute("data-cancel"))closeEditor();
+    else if(b.dataset.revert!==undefined){if(!confirm("Revert this action to the original text?"))return;delete edits[b.dataset.revert];saveEdits();closeEditor()}
+    else if(b.dataset.delete!==undefined){if(!confirm("Delete this action?"))return;added=added.filter(a=>String(a.id)!==b.dataset.delete);saveEdits();closeEditor()}
+  });
+  list.addEventListener("submit",e=>{e.preventDefault();saveForm(e.target)});
   list.addEventListener("change",e=>{
-    if(e.target.type!=="checkbox")return;const id=+e.target.dataset.id;const t=TASKS.find(x=>x.id===id);
+    if(e.target.type!=="checkbox"||!e.target.dataset.id)return;const id=e.target.dataset.id;
+    const a=added.find(x=>String(x.id)===id);
+    if(a){a.done=e.target.checked;saveEdits();render();return}
+    const t=TASKS.find(x=>String(x.id)===id);if(!t)return;
     if(e.target.checked===t.done)delete state[id];else state[id]=e.target.checked;save();render();
   });
-  document.getElementById("reset").addEventListener("click",()=>{state={};try{localStorage.removeItem(KEY)}catch(e){}render()});
+  document.getElementById("reset").addEventListener("click",()=>{state={};try{localStorage.removeItem(KEY)}catch(e){}added.forEach(a=>a.done=false);saveEdits();render()});
   document.getElementById("resetDates").addEventListener("click",resetDates);
+  document.getElementById("resetEdits").addEventListener("click",resetEdits);
+  document.getElementById("exportBtn").addEventListener("click",doExport);
   renderHeader();renderFilters();render();
-  setInterval(()=>{if(drag)return;renderHeader();render()},60*60*1000);
+  setInterval(()=>{if(drag||editing!==null)return;renderHeader();render()},60*60*1000);
 })();
 </script>
 </body>
