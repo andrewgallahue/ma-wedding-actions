@@ -13,25 +13,26 @@
    To mark a task done: change done:false -> done:true on its line,
    then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
    and update LAST_UPDATED. */
-const DATA_VERSION = "2026-10-10.6";
-const LAST_UPDATED = "Sat Oct 10, 2026, 9:18 AM PT";
+const DATA_VERSION = "2026-10-10.7";
+const LAST_UPDATED = "Sat Oct 10, 2026, 9:22 AM PT";
 const WEDDING_DATE = "2026-10-25";
 const TASKS = [
   {id:1,  task:"Fill out Chuck's Final Guest Count form (Part 1: count 154, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
   {id:2,  task:"Confirm Piatti 7-table patio layout with Maddie, then tell Kasey", category:"Rehearsal dinner", due:"2026-10-10", note:"Sent Oct 10 with headcount 58.", done:true},
   {id:3,  task:"Get Bernardo's updated BevMo invoice; check prices and stock (Pusser's, Stone Pilsner)", category:"Alcohol", due:"2026-10-13", note:"Nudged Oct 9. Needs to be locked by Oct 13.", done:false},
   {id:4,  task:"Send Chuck the final alcohol list for a thumbs up + ask about nutmeg", category:"Alcohol", due:"2026-10-14", note:"Sent Oct 10 with the M+A Wedding Drinks PDF; asked about triple sec, limes, ice, nutmeg. Waiting on Chuck.", done:true},
-  {id:5,  task:"Buy 50+ coconut waters at the grocery store", category:"Pickups & errands", due:"2026-10-18", note:"Sunday before; worst case Wed Oct 21. Drop off at Darlington the wedding morning.", done:false},
+  {id:5,  task:"Buy 50+ coconut waters at the grocery store", category:"Pickups & errands", due:"2026-10-16", note:"By Fri Oct 16. Drop off at Darlington the wedding morning.", done:false},
   {id:6,  task:"Abbey final payment", category:"Payments", due:"2026-10-15", note:"On hold until Chuck sends the balance.", done:false},
   {id:7,  task:"Piatti final menu due", category:"Rehearsal dinner", due:"2026-10-17", note:"Apps: 1 platter each.", done:false},
   {id:8,  task:"Piatti final headcount (58)", category:"Rehearsal dinner", due:"2026-10-21", note:"Told Kasey 58 on Oct 10; confirm by Oct 21.", done:false},
   {id:9,  task:"Confirm Wheat & Water headcount", category:"Welcome drinks", due:"2026-10-16", note:"Deduped RSVPs = 142, which Whitney already has. No email needed.", done:true},
   {id:10, task:"Pick songs in Planning Beats: grand entrance, processional, recessional, mother-son, first dance", category:"Music", due:"2026-10-16", note:"Lock in before the DJ Zoom on Oct 21. Portal: https://twec.planningbeats.com (Maddie has login)", done:false},
   {id:11, task:"DJ Zoom with Brian, 11am PT", category:"Music", due:"2026-10-21", note:"Zoom: https://us06web.zoom.us/j/87422350715", done:false},
-  {id:12, task:"Practice first dance + mother-son dance", category:"Music", due:"2026-10-23", note:"", done:false},
-  {id:13, task:"Finalize reception table assignments (seating chart)", category:"Seating", due:"2026-10-13", note:"Draft live (link in footer), 154 guests. Susan Allison and Nate Witherell at the head table for now.", done:false},
+  {id:12, task:"Practice first dance with Maddie", category:"Music", due:"2026-10-17", note:"", done:false},
+  {id:21, task:"Practice mother-son dance with Mom", category:"Music", due:"2026-10-21", note:"", done:false},
+  {id:13, task:"Finalize reception table assignments (seating chart)", category:"Seating", due:"2026-10-12", note:"Draft live (link in footer), 154 guests. Susan Allison and Nate Witherell at the head table for now.", done:false},
   {id:20, task:"Send Chuck the table assignments (form Parts 2-3)", category:"Seating", due:"2026-10-15", note:"Use the 'Copy for Abbey form' button on the seating chart once it's final.", done:false},
-  {id:15, task:"Buy seating display supplies: poster boards, paper clips, brown yarn/string", category:"Pickups & errands", due:"2026-10-18", note:"One poster board per table, guest names on paper clips; punch a hole in each board and weave the yarn through to hang them.", done:false},
+  {id:15, task:"Buy seating display supplies: poster boards, paper clips, brown yarn (not lights)", category:"Pickups & errands", due:"2026-10-11", note:"One poster board per table, guest names on paper clips; punch a hole in each board and weave the yarn through to hang them.", done:false},
   {id:14, task:"Ceremony seating: decide reserved front rows for family (optional)", category:"Seating", due:"2026-10-18", note:"From the original checklist; Abbey doesn't need it. Usually just 'Reserved' signs on the first rows for parents and grandmothers.", done:false},
   {id:16, task:"Print the bar sign + get table runners", category:"Pickups & errands", due:"2026-10-18", note:"Bar sign = the drink menu sign we designed (24x60 banner or 24x36 poster), not the PDF sent to Chuck. Runners 9-10 ft.", done:false},
   {id:17, task:"Finalize Maddie's photo people list", category:"Photos", due:"2026-10-16", note:"Maddie is handling.", done:false},
