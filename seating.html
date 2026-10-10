@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Andrew &amp; Maddie's Seating Chart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* ================= SHARED BASELINE =================
+   SEATING is the published draft everyone starts from: { guestId: tableNumber }.
+   Guests not listed are unassigned. To publish someone's arrangement, paste the
+   "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
+   and republish. Viewers then get a "new published draft" prompt. */
+const SEATING_VERSION = "2026-10-10.1";
+const SEATING = {
+  "g066":1,"g067":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
+  "g075":2,"g076":2,"g077":2,"g082":2,"g016":3,"g017":3,"g119":3,"g120":3,
+  "g121":3,"g122":3,"g124":3,"g125":3,"g126":3,"g127":3,"g011":4,"g013":4,
+  "g018":4,"g019":4,"g020":4,"g021":4,"g022":4,"g023":4,"g150":4,"g151":4,
+  "g001":5,"g002":5,"g003":5,"g007":5,"g008":5,"g009":5,"g078":5,"g079":5,
+  "g080":5,"g081":5,"g015":6,"g043":6,"g128":6,"g129":6,"g130":6,"g131":6,
+  "g132":6,"g133":6,"g134":6,"g136":6,"g024":7,"g027":7,"g029":7,"g030":7,
+  "g031":7,"g032":7,"g033":7,"g034":7,"g035":7,"g036":7,"g037":8,"g038":8,
+  "g041":8,"g042":8,"g047":8,"g048":8,"g049":8,"g050":8,"g051":8,"g052":8,
+  "g055":9,"g056":9,"g057":9,"g058":9,"g062":9,"g063":9,"g064":9,"g065":9,
+  "g083":9,"g084":9,"g085":10,"g086":10,"g087":10,"g088":10,"g089":10,"g090":10,
+  "g091":10,"g092":10,"g093":10,"g099":10,"g095":11,"g096":11,"g100":11,"g101":11,
+  "g102":11,"g103":11,"g104":11,"g108":11,"g109":11,"g110":11,"g111":12,"g112":12,
+  "g113":12,"g114":12,"g117":12,"g118":12,"g137":12,"g138":12,"g139":12,"g140":12,
+  "g141":13,"g142":13,"g143":13,"g144":13,"g145":13,"g146":13,"g147":13,"g148":13,
+  "g149":13,"g156":13,"g154":14,"g155":14,"g157":14,"g158":14,"g159":14,"g161":14,
+  "g162":14,"g163":14,"g165":14,"g166":14,"g167":15,"g168":15,"g169":15,"g171":15,
+  "g172":15,"g173":15,"g175":15,"g176":15,"g177":15,"g182":15,"g178":16,"g179":16,
+  "g180":16,"g181":16,"g185":16,"g186":16,"g190":16,"g191":16,"g195":16,"g197":16
+};
+/* Wedding RSVPs marked Attending (exact duplicates removed). d = dietary note. */
+const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
+  {"id":"g002","f":"Caitlin","l":"Allocca","d":"Gluten free"},
+  {"id":"g003","f":"Dodi","l":"Allocca","d":"Gluten free"},
+  {"id":"g007","f":"Will","l":"Allocca"},
+  {"id":"g008","f":"Kathleen","l":"Antczak"},
+  {"id":"g009","f":"Sam","l":"Antczak"},
+  {"id":"g011","f":"Ann","l":"Barnard"},
+  {"id":"g013","f":"Samantha","l":"Barnard","d":"Vegan, dairy OK (from Welcome Party RSVP; wedding note blank)"},
+  {"id":"g150","f":"Delaney","l":"Murphy"},
+  {"id":"g151","f":"Mackenzie","l":"Barnard"},
+  {"id":"g015","f":"Gillian","l":"Belgique"},
+  {"id":"g016","f":"Sarah","l":"Berryman"},
+  {"id":"g017","f":"Jake","l":"Berryman"},
+  {"id":"g018","f":"Brendan","l":"Black"},
+  {"id":"g019","f":"Katie","l":"Black"},
+  {"id":"g020","f":"Owen","l":"Black"},
+  {"id":"g021","f":"Kristen","l":"Finley"},
+  {"id":"g022","f":"Jessica","l":"Bouer"},
+  {"id":"g023","f":"Jake","l":"Bouer"},
+  {"id":"g024","f":"Beverly","l":"Brown","d":"No pistachios"},
+  {"id":"g027","f":"Steve","l":"Brown"},
+  {"id":"g029","f":"Reaney","l":"Brungo"},
+  {"id":"g030","f":"Max","l":"Durham"},
+  {"id":"g031","f":"Kieran","l":"Byrnes"},
+  {"id":"g032","f":"Lauren","l":"Fisher"},
+  {"id":"g033","f":"Emily","l":"Chandler"},
+  {"id":"g034","f":"Everett","l":"Chandler","d":"No meat (from Welcome Party RSVP; wedding note blank)"},
+  {"id":"g035","f":"Joanie","l":"Chandler"},
+  {"id":"g036","f":"Grace","l":"Chandler"},
+  {"id":"g037","f":"Frederick","l":"Colberg"},
+  {"id":"g038","f":"Jaimie","l":"Kirkwood"},
+  {"id":"g041","f":"Travis","l":"Collier"},
+  {"id":"g042","f":"Brooke","l":"Mail"},
+  {"id":"g043","f":"Tj","l":"Comizio"},
+  {"id":"g047","f":"Alan","l":"DeAngelo"},
+  {"id":"g048","f":"Marietta","l":"DeAngelo"},
+  {"id":"g049","f":"Lucas","l":"DeAngelo"},
+  {"id":"g050","f":"Melanie","l":"DeAngelo"},
+  {"id":"g051","f":"Fernando","l":"Delgado"},
+  {"id":"g052","f":"Haley","l":"Frederking"},
+  {"id":"g055","f":"Michael","l":"Domino"},
+  {"id":"g056","f":"Maggy","l":"McCarthy"},
+  {"id":"g057","f":"Chris","l":"Donovan"},
+  {"id":"g058","f":"Elan","l":"Fingles"},
+  {"id":"g062","f":"Gracie","l":"Gagne"},
+  {"id":"g063","f":"Patrick","l":"O'Brien"},
+  {"id":"g064","f":"Melissa","l":"Gagne"},
+  {"id":"g065","f":"Shawn","l":"Gagne"},
+  {"id":"g066","f":"Andrew","l":"Gallahue"},
+  {"id":"g067","f":"Madison","l":"Lucarelli"},
+  {"id":"g068","f":"Ben","l":"Gallahue"},
+  {"id":"g069","f":"Emma","l":"Rodgers"},
+  {"id":"g070","f":"Bobby","l":"Gallahue"},
+  {"id":"g071","f":"Stephanie","l":"Ward"},
+  {"id":"g072","f":"Joan","l":"Gallahue"},
+  {"id":"g074","f":"Karen","l":"Gallahue"},
+  {"id":"g075","f":"Bob","l":"Gallahue"},
+  {"id":"g076","f":"Kate","l":"Gallahue"},
+  {"id":"g077","f":"Kevin","l":"Galgay"},
+  {"id":"g078","f":"Megan","l":"Gallahue","d":"Vegetarian"},
+  {"id":"g079","f":"Nick","l":"Harney"},
+  {"id":"g080","f":"Michael","l":"Gallahue"},
+  {"id":"g081","f":"Mary","l":"Gallahue","d":"Gluten intolerance"},
+  {"id":"g082","f":"Sean","l":"Gallahue"},
+  {"id":"g083","f":"Karen","l":"Giangrande"},
+  {"id":"g084","f":"David","l":"Giangrande"},
+  {"id":"g085","f":"Jake","l":"Gillespie"},
+  {"id":"g086","f":"Cameron","l":"Longyear"},
+  {"id":"g087","f":"Kristen","l":"Gillespie"},
+  {"id":"g088","f":"Jim","l":"Gillespie"},
+  {"id":"g089","f":"Molly","l":"Gillespie"},
+  {"id":"g090","f":"Christian","l":"Colucci"},
+  {"id":"g091","f":"Rebecca","l":"Godfrey"},
+  {"id":"g092","f":"Ruby","l":"Goss"},
+  {"id":"g093","f":"Max","l":"Groen"},
+  {"id":"g095","f":"Ellen","l":"Groh"},
+  {"id":"g096","f":"Connor","l":"Groh"},
+  {"id":"g099","f":"Kevin","l":"Hatton"},
+  {"id":"g100","f":"Colleen","l":"Haynes"},
+  {"id":"g101","f":"Joe","l":"Haynes"},
+  {"id":"g102","f":"Brennan","l":"Howley"},
+  {"id":"g103","f":"Ariel","l":"Izaguirre"},
+  {"id":"g104","f":"John","l":"Desepoli"},
+  {"id":"g108","f":"Paula","l":"Jordan"},
+  {"id":"g109","f":"Kirk","l":"Kelley"},
+  {"id":"g110","f":"Jack","l":"Kinnear","d":"No shrimp or crab"},
+  {"id":"g111","f":"Connor","l":"Kirst"},
+  {"id":"g112","f":"Meghan","l":"Manne"},
+  {"id":"g113","f":"Gregg","l":"Kobelski"},
+  {"id":"g114","f":"Lexi","l":"Kobelski","d":"Gluten free"},
+  {"id":"g117","f":"Kelsie","l":"Linnell"},
+  {"id":"g118","f":"Alex","l":"Hillman"},
+  {"id":"g119","f":"Becki","l":"Lucarelli"},
+  {"id":"g120","f":"Michael","l":"Lucarelli"},
+  {"id":"g121","f":"Ben","l":"Lucarelli"},
+  {"id":"g122","f":"Francoise","l":"Lucarelli"},
+  {"id":"g124","f":"Dorothea","l":"Lucarelli"},
+  {"id":"g125","f":"Enzo","l":"Lucarelli"},
+  {"id":"g126","f":"Elise","l":"Lucarelli"},
+  {"id":"g127","f":"Jim","l":"Lucarelli"},
+  {"id":"g128","f":"Virginia","l":"Lucarelli"},
+  {"id":"g129","f":"Max","l":"Lucarelli"},
+  {"id":"g130","f":"Atlas","l":"Lucarelli"},
+  {"id":"g131","f":"Nina","l":"Lucarelli"},
+  {"id":"g132","f":"Peter","l":"Lucarelli"},
+  {"id":"g133","f":"Makenzye","l":"Lucarelli"},
+  {"id":"g134","f":"Sylvain","l":"Lucarelli"},
+  {"id":"g136","f":"Thea","l":"Lucarelli"},
+  {"id":"g137","f":"Sarah","l":"MacAskill"},
+  {"id":"g138","f":"Ryan","l":"MacDonald"},
+  {"id":"g139","f":"Carly","l":"MacDonald"},
+  {"id":"g140","f":"Gem","l":"Manuel"},
+  {"id":"g141","f":"Tom","l":"Michaud"},
+  {"id":"g142","f":"Ann","l":"Michaud"},
+  {"id":"g143","f":"Anna","l":"Milan"},
+  {"id":"g144","f":"Sean","l":"Summers"},
+  {"id":"g145","f":"Courtney","l":"Milley","d":"Gluten free"},
+  {"id":"g146","f":"Matt","l":"Moll"},
+  {"id":"g147","f":"Jamie","l":"Hunziker"},
+  {"id":"g148","f":"Steve","l":"Morandi"},
+  {"id":"g149","f":"Sue","l":"Morandi","d":"Shellfish allergy"},
+  {"id":"g154","f":"Zach","l":"Paglione"},
+  {"id":"g155","f":"Taylor","l":"Gait"},
+  {"id":"g156","f":"Kaitlin","l":"Parenteau"},
+  {"id":"g157","f":"Mark","l":"Pelletier"},
+  {"id":"g158","f":"Ivana","l":"Pelletier"},
+  {"id":"g159","f":"Ty","l":"Peterson"},
+  {"id":"g161","f":"Luke","l":"Prybilski"},
+  {"id":"g162","f":"Erika","l":"Prybilski"},
+  {"id":"g163","f":"Brendan","l":"Quigley"},
+  {"id":"g165","f":"Mimi","l":"Rashid","d":"No pork"},
+  {"id":"g166","f":"Ash","l":"Rashid","d":"No pork"},
+  {"id":"g167","f":"Julia","l":"Rivalta","d":"Dairy free"},
+  {"id":"g168","f":"Joseph","l":"McGee","d":"Dairy free"},
+  {"id":"g169","f":"McCarley","l":"Rouse"},
+  {"id":"g171","f":"Kalin","l":"Schultz"},
+  {"id":"g172","f":"Kenan","l":"Waters"},
+  {"id":"g173","f":"Daniel","l":"Seibel"},
+  {"id":"g175","f":"Tori","l":"Shaper"},
+  {"id":"g176","f":"Kira","l":"Shollenberger"},
+  {"id":"g177","f":"Cam","l":"Byrne"},
+  {"id":"g178","f":"Annie","l":"Starrett"},
+  {"id":"g179","f":"David","l":"Starrett"},
+  {"id":"g180","f":"Camdon","l":"Steele"},
+  {"id":"g181","f":"Rylie","l":"Steele"},
+  {"id":"g182","f":"Nicole","l":"Steinbacher"},
+  {"id":"g185","f":"Esme","l":"Stults"},
+  {"id":"g186","f":"Margaux","l":"Stults"},
+  {"id":"g190","f":"Hannah","l":"Tully"},
+  {"id":"g191","f":"Tim","l":"Tully"},
+  {"id":"g195","f":"Andrew","l":"Venincasa","d":"Peanut & pistachio allergy"},
+  {"id":"g197","f":"Emma","l":"Wiggins"},
+  {"id":"g198","f":"Nate","l":"Witherell"}];
+/* Tables from Abbey's floor plan. x/y = position on the plan (400 dpi render of the PDF). */
+const TABLES = [
+  {n:1, shape:"rect",dir:"h",cap:10,x:1667,y:956, note:"Head table (B & G)"},
+  {n:2, shape:"round",cap:10,x:1535,y:1053},
+  {n:3, shape:"round",cap:10,x:1803,y:1065},
+  {n:4, shape:"rect",dir:"v",cap:10,x:1667,y:1128},
+  {n:5, shape:"round",cap:10,x:1535,y:1210},
+  {n:6, shape:"round",cap:10,x:1800,y:1216},
+  {n:7, shape:"rect",dir:"h",cap:10,x:1565,y:1346},
+  {n:8, shape:"rect",dir:"h",cap:10,x:1746,y:1351},
+  {n:9, shape:"rect",dir:"h",cap:10,x:1544,y:1795},
+  {n:10,shape:"rect",dir:"h",cap:10,x:1742,y:1791},
+  {n:11,shape:"round",cap:10,x:1512,y:1921},
+  {n:12,shape:"round",cap:10,x:1795,y:1909},
+  {n:13,shape:"rect",dir:"v",cap:10,x:1658,y:1965},
+  {n:14,shape:"round",cap:10,x:1523,y:2061},
+  {n:15,shape:"round",cap:10,x:1803,y:2065},
+  {n:16,shape:"rect",dir:"h",cap:10,x:1667,y:2149}
+];
+/* ==================================================== */
+</script>
+<style>
+:root{--sun:#f59e42;--sunset:#e8673c;--coral:#f28b6d;--sand:#f3e3c3;--cream:#fffaf0;--teal:#1f8a8a;--deep:#0f5257;--ink:#2d3436;--muted:#6b7275;--red:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--cream);line-height:1.45;-webkit-text-size-adjust:100%}
+header{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffd9a0 0%,#ffc58a 38%,#f8a873 62%,#7cc6c0 63%,#4fa9a6 100%);padding:24px 20px 66px;text-align:center}
+header .sun{position:absolute;top:14px;right:6%;width:110px;height:110px}
+header .palm{position:absolute;bottom:0;left:2%;width:120px;height:200px}
+header .waves{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:40px;display:block}
+.htext{position:relative;z-index:2;max-width:720px;margin:0 auto}
+h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(30px,6.5vw,52px);line-height:1.05;margin:8px 0 6px;color:var(--deep);text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.sub{font-size:15px;font-weight:500;color:#5a3b22;margin:0}
+.count{display:inline-block;margin-top:12px;background:rgba(255,250,240,.88);color:var(--sunset);font-weight:600;padding:6px 16px;border-radius:999px;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.hlink{position:absolute;top:10px;left:14px;z-index:3;font-size:13px;font-weight:600;color:var(--deep);text-decoration:none;background:rgba(255,250,240,.75);padding:3px 10px;border-radius:999px}
+.wrap{max-width:1400px;margin:-34px auto 0;padding:0 14px 30px;position:relative;z-index:3}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(15,82,87,.10);padding:12px 14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1.5px solid var(--deep);border-radius:999px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;font-weight:500;border:0;background:#fff;color:var(--deep);padding:6px 14px;cursor:pointer}
+.seg button.on{background:var(--deep);color:#fff}
+.btn{font:inherit;font-size:13px;font-weight:500;border:1.5px solid #e2d3b5;background:#fff;color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.primary{background:var(--sunset);border-color:var(--sunset);color:#fff}
+.btn.primary:hover{background:#d65a31;color:#fff}
+.spacer{flex:1}
+.status{font-size:12px;color:var(--muted)}
+.banner{display:none;margin-top:10px;background:#fff6e8;border:1.5px solid var(--sun);border-radius:12px;padding:8px 12px;font-size:13.5px}
+.banner.show{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.layout{display:grid;grid-template-columns:290px 1fr;gap:14px;margin-top:14px;align-items:start}
+aside{position:sticky;top:10px;max-height:calc(100vh - 20px);display:flex;flex-direction:column}
+aside h2,.lv h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:22px;color:var(--deep);margin:0}
+.ahead{display:flex;justify-content:space-between;align-items:baseline}
+.ahead span{font-size:13px;font-weight:600;color:var(--sunset)}
+.search{width:100%;font:inherit;font-size:14px;padding:8px 12px;border:1.5px solid #e2d3b5;border-radius:999px;margin:8px 0;outline:none}
+.search:focus{border-color:var(--teal)}
+#unassigned{flex:1;overflow:auto;min-height:90px;border:2px dashed transparent;border-radius:12px;padding:4px;transition:background .15s}
+#unassigned.over{border-color:var(--teal);background:#eef8f7}
+.urow{display:flex;align-items:center;gap:6px;padding:4px 2px;border-bottom:1px solid #f3ead8}
+.urow .chip{flex:1;max-width:none}
+.urow select,.lrow select{font:inherit;font-size:12px;padding:3px 4px;border:1px solid #e2d3b5;border-radius:8px;background:#fff;max-width:118px}
+.empty{color:var(--muted);font-size:13px;padding:14px 4px;text-align:center}
+.legend{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.7}
+.chip{display:inline-flex;align-items:center;gap:3px;max-width:100%;background:var(--cream);border:1px solid #ead8b4;border-radius:999px;padding:1px 7px;font-size:11px;font-weight:500;line-height:16px;cursor:grab;user-select:none;-webkit-user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.chip .nm{overflow:hidden;text-overflow:ellipsis}
+.chip.couple{background:#fff2e6;border-color:var(--sun);font-weight:600}
+.chip.dragging{opacity:.4}
+.chip.hit{background:#fde68a;border-color:var(--sun)}
+.dim .chip:not(.hit){opacity:.28}
+.di{font-size:11px;cursor:help;flex:0 0 auto}
+main.planbox{min-width:0}
+.zoom{display:flex;gap:6px;align-items:center;margin-bottom:8px;font-size:12.5px;color:var(--muted)}
+.zoom .btn{padding:3px 10px}
+.viewport{overflow:auto;border-radius:16px;background:#fdf6e7;box-shadow:inset 0 0 0 1px #eadfc8;-webkit-overflow-scrolling:touch}
+.sizer{position:relative}
+.canvas{position:absolute;left:0;top:0;width:900px;height:1530px;transform-origin:0 0}
+.canvas svg.decor{position:absolute;left:0;top:0;width:900px;height:1530px}
+.tbl{position:absolute;width:200px;margin-left:-100px;background:rgba(255,255,255,.93);border:2px solid #cfe0dc;border-radius:14px;padding:5px 6px 6px;box-shadow:0 2px 8px rgba(15,82,87,.10);transition:border-color .15s,background .15s}
+.tbl:hover{z-index:5}
+.tbl.over{border-color:var(--teal);background:#eef8f7;z-index:6}
+.tbl.full .cnt{color:var(--teal)}
+.tbl.overcap{border-color:var(--red);background:#fff0ee}
+.tbl.overcap .cnt{color:var(--red)}
+.tbl.head{border-color:var(--sun);background:rgba(255,248,236,.96)}
+.th{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.th svg{flex:0 0 auto}
+.th b{font-size:13px;color:var(--deep);font-weight:600;line-height:1.1}
+.th small{display:block;font-size:10px;color:var(--muted);font-weight:500}
+.cnt{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--sunset)}
+.seats{display:grid;grid-template-columns:1fr 1fr;gap:3px;min-height:20px}
+.seats .chip{max-width:none}
+.open{border:1px dashed #d9c9a5;border-radius:999px;height:18px}
+/* list view */
+.lv{display:none}
+.lgrid{columns:3 280px;column-gap:14px;margin-top:10px}
+.lt{break-inside:avoid;background:#fff;border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);padding:10px 12px;margin:0 0 12px;border-left:5px solid var(--teal)}
+.lt.overcap{border-left-color:var(--red)}
+.lt.head{border-left-color:var(--sun)}
+.lt h3{margin:0 0 4px;font-size:15px;color:var(--deep);display:flex;justify-content:space-between;gap:8px}
+.lt h3 span{color:var(--sunset);font-size:13px}
+.lt.overcap h3 span{color:var(--red)}
+.lrow{display:flex;align-items:center;gap:6px;font-size:13.5px;padding:2px 0;border-bottom:1px solid #f6efe0}
+.lrow .n{flex:1;min-width:0}
+.lrow .dn{display:block;font-size:11.5px;color:#a2532f}
+.lrow.hit{background:#fef3c7}
+body.list .planwrap{display:none}
+body.list .lv{display:block}
+/* popover */
+.pop{position:fixed;z-index:50;background:#fff;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.2);padding:10px 12px;width:230px;display:none;font-size:13px}
+.pop.show{display:block}
+.pop b{display:block;font-size:14px;color:var(--deep)}
+.pop .dn{color:#a2532f;font-size:12px;margin:2px 0}
+.pop select{width:100%;font:inherit;font-size:13px;padding:5px;margin-top:6px;border:1px solid #e2d3b5;border-radius:8px}
+dialog{border:0;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:18px;width:min(520px,92vw)}
+dialog h3{margin:0 0 6px;font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:22px;color:var(--deep)}
+dialog textarea{width:100%;height:110px;font:12px/1.4 ui-monospace,Menlo,monospace;border:1.5px solid #e2d3b5;border-radius:10px;padding:8px}
+dialog .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:flex-end}
+dialog p{font-size:13px;color:var(--muted);margin:4px 0 8px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--deep);color:#fff;padding:8px 16px;border-radius:999px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.show{opacity:1}
+footer{text-align:center;font-size:12.5px;color:var(--muted);padding:10px 16px 34px}
+footer a{color:var(--teal);font-weight:600}
+.printhead{display:none}
+@media (max-width:860px){
+ .layout{grid-template-columns:1fr}
+ aside{position:static;max-height:none;order:2}
+ #unassigned{max-height:60vh}
+ main.planbox{order:1}
+}
+@media (max-width:560px){
+ header{padding:30px 16px 62px}
+ header .sun{width:78px;height:78px;top:-20px;right:-20px}
+ header .palm{width:78px;height:130px;left:-6px}
+ .htext{padding:0 30px}
+ .sub{font-size:13px}
+ .count{font-size:13.5px}
+ .btn{font-size:12.5px;padding:5px 10px}
+ .spacer{display:none}
+ .toolbar{gap:6px}
+ .btn,.seg button{font-size:12px;padding:4px 9px}
+ .znote{display:none}
+ .status{font-size:11.5px}
+}
+@media print{
+ @page{margin:12mm}
+ body{background:#fff}
+ header,.toolbar-card,aside,.planwrap,footer,.pop,.toast,.lrow select,.lv .lvnote{display:none!important}
+ .wrap{margin:0;padding:0;max-width:none}
+ .layout{display:block;margin:0}
+ .lv{display:block!important}
+ .printhead{display:block;font-family:"DM Serif Display",Georgia,serif;font-size:24px;color:#000;margin:0 0 4px}
+ .lgrid{columns:2;column-gap:10mm}
+ .lt{box-shadow:none;border:1px solid #bbb;border-left:4px solid #555;border-radius:6px;padding:6px 8px;margin-bottom:8px}
+ .lt h3,.lt h3 span{color:#000}
+ .lrow{font-size:11.5px;border-bottom:1px solid #eee}
+ .lrow.hit{background:none}
+ .lrow .dn{color:#000;font-style:italic}
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="hlink" href="./">← Actions</a>
+  <svg class="sun" viewBox="0 0 120 120" aria-hidden="true">
+    <g stroke="#ffb340" stroke-width="5" stroke-linecap="round">
+      <line x1="60" y1="4" x2="60" y2="20"/><line x1="60" y1="100" x2="60" y2="116"/>
+      <line x1="4" y1="60" x2="20" y2="60"/><line x1="100" y1="60" x2="116" y2="60"/>
+      <line x1="20" y1="20" x2="31" y2="31"/><line x1="89" y1="89" x2="100" y2="100"/>
+      <line x1="20" y1="100" x2="31" y2="89"/><line x1="89" y1="31" x2="100" y2="20"/>
+    </g>
+    <circle cx="60" cy="60" r="30" fill="#ffcf4a" stroke="#ffb340" stroke-width="3"/>
+  </svg>
+  <svg class="palm" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M58 200 C60 160 62 120 70 70" stroke="#7a4e2d" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <g fill="#1f6b5a">
+      <path d="M70 68 C50 50 25 52 8 66 C30 58 50 62 70 72Z"/>
+      <path d="M70 68 C60 40 40 28 18 30 C40 38 56 52 68 72Z"/>
+      <path d="M70 68 C78 40 96 28 116 32 C96 40 82 54 72 72Z"/>
+      <path d="M70 68 C92 54 112 60 118 80 C102 66 88 66 72 72Z"/>
+      <path d="M70 68 C66 48 70 30 82 16 C78 36 76 52 72 72Z"/>
+      <path d="M70 70 C52 70 36 84 30 104 C44 88 56 80 72 74Z"/>
+    </g>
+    <circle cx="68" cy="74" r="4" fill="#8a5a2b"/><circle cx="75" cy="73" r="4" fill="#8a5a2b"/>
+  </svg>
+  <div class="htext">
+    <h1>Andrew &amp; Maddie's Seating Chart</h1>
+    <p class="sub">Reception · Sun Oct 25, 2026 · The Darlington House, La Jolla · Catered by Abbey</p>
+    <div class="count" id="count"></div>
+  </div>
+  <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 20 C150 0 300 40 450 20 S750 0 900 20 S1100 40 1200 18 V40 H0Z" fill="#fffaf0"/>
+  </svg>
+</header>
+<div class="wrap">
+  <div class="card toolbar-card">
+    <div class="toolbar">
+      <div class="seg" role="tablist"><button id="vPlan" class="on">Floor plan</button><button id="vList">List view</button></div>
+      <span class="spacer"></span>
+      <button class="btn primary" id="bExport" title="Download seating.json">⬇ Export</button>
+      <button class="btn" id="bImport" title="Load an exported file or share code">⬆ Import</button>
+      <button class="btn" id="bCopy" title="Copy a short code that loads this arrangement">📋 Copy share code</button>
+      <button class="btn" id="bCsv" title="Table, Guest, Dietary — for Chuck">Download CSV</button>
+      <button class="btn" id="bPrint">Print list</button>
+      <button class="btn" id="bReset" title="Discard your changes and load the published draft">Reset to published</button>
+    </div>
+    <div class="status" id="status" style="margin-top:6px"></div>
+    <div class="banner" id="banner"></div>
+  </div>
+  <div class="layout">
+    <aside class="card" id="aside">
+      <div class="ahead"><h2>Unassigned guests</h2><span id="ucount"></span></div>
+      <input class="search" id="q" type="search" placeholder="Search all guests…" autocomplete="off">
+      <div id="unassigned" aria-label="Unassigned guests. Drop a guest here to unseat them."></div>
+      <div class="legend">Drag a name onto a table, or use its dropdown. Drag back here to unassign. Tap a name on the plan for options.<br>
+        <span id="legend"></span></div>
+    </aside>
+    <main class="planbox">
+      <div class="planwrap">
+        <div class="zoom"><button class="btn" id="zOut" aria-label="Zoom out">−</button><button class="btn" id="zFit">Fit</button><button class="btn" id="zIn" aria-label="Zoom in">+</button><span id="zLbl"></span><span class="znote" style="margin-left:auto">Layout from Abbey's floor plan (spacing stretched to fit names)</span></div>
+        <div class="viewport" id="viewport"><div class="sizer" id="sizer"><div class="canvas" id="canvas"><svg class="decor" id="decor" viewBox="0 0 900 1530" aria-hidden="true"></svg></div></div></div>
+      </div>
+      <section class="lv" id="lv">
+        <div class="printhead">Andrew &amp; Maddie — Reception Seating · Sun Oct 25, 2026 · The Darlington House</div>
+        <div class="card lvnote" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2>Tables &amp; guests</h2><span class="status" id="lvsum"></span></div>
+        <div class="lgrid" id="lgrid"></div>
+      </section>
+    </main>
+  </div>
+</div>
+<footer>Changes save on this device automatically. To share: <b>Export</b> or <b>Copy share code</b> and send it to each other, then <b>Import</b>. <a href="./">Wedding actions →</a></footer>
+<div class="pop" id="pop"></div>
+<dialog id="dlg">
+  <h3 id="dlgT">Import seating</h3>
+  <p id="dlgP">Paste a share code (or the contents of seating.json), or choose an exported file.</p>
+  <textarea id="dlgTxt" spellcheck="false"></textarea>
+  <div class="row">
+    <input type="file" id="file" accept=".json,application/json" hidden>
+    <button class="btn" id="dlgFile">Choose file…</button>
+    <span class="spacer"></span>
+    <button class="btn" id="dlgCancel">Cancel</button>
+    <button class="btn primary" id="dlgOk">Load</button>
+  </div>
+</dialog>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  const KEY="maSeatingChart";
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const byId={};GUESTS.forEach(g=>byId[g.id]=g);
+  const TN=TABLES.map(t=>t.n);
+  const tByN={};TABLES.forEach(t=>tByN[t.n]=t);
+  const COUPLE=new Set(["g066","g067"]);
+  const name=g=>g.f+" "+g.l;
+  const short=g=>g.f+" "+g.l.charAt(0)+".";
+
+  /* ---- dietary icons ---- */
+  function dIcon(d){
+    if(!d)return"";const s=d.toLowerCase();
+    if(/peanut|pistach|nut/.test(s))return"🥜";
+    if(/shellfish|shrimp|crab/.test(s))return"🦐";
+    if(/gluten/.test(s))return"🌾";
+    if(/vegan|vegetarian|meat/.test(s))return"🥦";
+    if(/dairy/.test(s))return"🥛";
+    if(/pork/.test(s))return"🐖";
+    return"⚠️";
+  }
+  $("legend").textContent="Dietary: 🌾 gluten · 🥦 vegetarian/vegan · 🥜 nut · 🦐 shellfish · 🥛 dairy · 🐖 no pork";
+
+  /* ---- state ---- */
+  let A={};          // guestId -> table number
+  let updated=null;
+  const clean=o=>{const r={};Object.keys(o||{}).forEach(k=>{const t=+o[k];if(byId[k]&&tByN[t])r[k]=t});return r};
+  function load(){
+    let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+    if(s&&s.a){A=clean(s.a);updated=s.t||null;
+      if(s.base!==SEATING_VERSION)showBanner("A newer published draft ("+SEATING_VERSION+") is available.",[["Load published draft",()=>{resetToBase();hideBanner()}],["Keep mine",()=>{save();hideBanner()}]]);
+    }else A=clean(SEATING);
+  }
+  function save(){updated=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify({base:SEATING_VERSION,a:A,t:updated}))}catch(e){}}
+  function resetToBase(){A=clean(SEATING);try{localStorage.removeItem(KEY)}catch(e){}updated=null;render();toast("Loaded the published draft")}
+  function setT(id,t){t=+t||0;if(t)A[id]=t;else delete A[id];save();render()}
+
+  /* ---- share code: MAS1. + base64url of table numbers in GUESTS order ---- */
+  function code(){
+    const s=GUESTS.map(g=>(A[g.id]||0).toString(36)).join("");
+    return"MAS1."+btoa(SEATING_VERSION+"|"+s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+  function parseCode(c){
+    const m=c.match(/MAS1\.([A-Za-z0-9_-]+)/);if(!m)return null;
+    let b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
+    const raw=atob(b);const s=raw.split("|").pop();const o={};
+    GUESTS.forEach((g,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t)o[g.id]=t});
+    return o;
+  }
+  function parseAny(txt){
+    txt=(txt||"").trim();if(!txt)return null;
+    const c=parseCode(txt);if(c)return c;
+    const j=JSON.parse(txt);
+    const src=j.SEATING||j.assignments||j;
+    // also accept names list for robustness
+    if(Array.isArray(j.guests)&&!j.SEATING){const o={};j.guests.forEach(x=>{const g=byId[x.id]||GUESTS.find(y=>name(y).toLowerCase()===String(x.name||"").toLowerCase());if(g&&x.table)o[g.id]=+x.table});return o}
+    return src;
+  }
+
+  /* ---- counts ---- */
+  function counts(){const c={};TN.forEach(n=>c[n]=0);Object.values(A).forEach(t=>c[t]++);return c}
+  const tLabel=t=>"Table "+t.n+(t.note?" · Head":"");
+  const kind=t=>t.note?t.note:(t.shape==="round"?"Round table":"Farm table");
+
+  /* ---- floor plan geometry: plan coords -> canvas px (stretched so name chips fit) ---- */
+  const XK=[[1100,0],[1140,10],[1400,150],[1530,250],[1665,470],[1800,690],[1877,800],[2100,900]];
+  const YK=[[560,0],[956,190],[1060,262],[1128,372],[1213,444],[1348,626],[1420,720],[1720,900],[1793,990],[1915,1172],[1965,1224],[2063,1354],[2149,1406],[2300,1520]];
+  const pl=(K,v)=>{if(v<=K[0][0])return K[0][1];for(let i=1;i<K.length;i++){if(v<=K[i][0]){const[a,b]=K[i-1],[c,d]=K[i];return b+(v-a)*(d-b)/(c-a)}}return K[K.length-1][1]};
+  const X=v=>Math.round(pl(XK,v)),Y=v=>Math.round(pl(YK,v));
+  function rectP(x1,y1,x2,y2,fill,stroke,extra){return'<rect x="'+X(x1)+'" y="'+Y(y1)+'" width="'+(X(x2)-X(x1))+'" height="'+(Y(y2)-Y(y1))+'" fill="'+fill+'" stroke="'+(stroke||"none")+'" '+(extra||"")+'/>'}
+  function decor(){
+    const G="#d6e7a6",GS="#a9c27a";let s="";
+    // tree canopy + terrace (top of plan)
+    s+='<ellipse cx="'+X(1474)+'" cy="'+Y(816)+'" rx="'+(X(1693)-X(1474))+'" ry="'+(Y(1035)-Y(816))+'" fill="#cfe2d6" opacity=".9"/>';
+    s+='<ellipse cx="'+X(1895)+'" cy="'+Y(851)+'" rx="'+(X(2100)-X(1895)+20)+'" ry="'+(Y(1061)-Y(851))+'" fill="#cfe2d6" opacity=".9"/>';
+    s+=rectP(1377,789,2035,1000,"none","#9fb5a8",'stroke-width="2"');
+    s+='<path d="M'+X(1440)+' '+Y(1000)+' Q'+X(1665)+' '+Y(820)+' '+X(1890)+' '+Y(1000)+'" fill="none" stroke="#9fb5a8" stroke-width="2"/>';
+    s+='<text x="'+X(1710)+'" y="'+(Y(600)+14)+'" text-anchor="middle" font-size="15" fill="#4b6358" font-family="DM Serif Display,Georgia,serif">Maddie and Andrew</text>';
+    // room floor
+    s+='<path d="M'+X(1140)+' '+Y(870)+' H'+X(1377)+' V'+Y(1000)+' H'+X(1877)+' V'+Y(2123)+' H'+X(1930)+' Q'+X(1880)+' '+Y(2290)+' '+X(1650)+' '+Y(2290)+' Q'+X(1420)+' '+Y(2290)+' '+X(1377)+' '+Y(2123)+' H'+X(1140)+' Z" fill="#fffdf7" stroke="#9aa0a3" stroke-width="3" stroke-linejoin="round" opacity=".95"/>';
+    // planters & stations (left wall)
+    s+=rectP(1154,877,1263,1307,G,GS)+rectP(1154,1465,1316,1763,G,GS)+rectP(1154,1789,1377,2123,G,GS);
+    s+=rectP(1160,1895,1272,1990,"#fff","#9aa0a3",'stroke-width="2"');
+    s+=rectP(1877,1263,2079,1544,G,GS)+rectP(1877,1605,2070,2067,G,GS);
+    s+=rectP(1263,985,1340,1025,"#fff","#9aa0a3")+'<text x="'+X(1301)+'" y="'+(Y(1005)+4)+'" text-anchor="middle" font-size="12" fill="#555">Coffee</text>';
+    s+='<rect x="'+(X(1263)+4)+'" y="'+Y(1090)+'" width="22" height="'+(Y(1220)-Y(1090))+'" fill="#fff" stroke="#9aa0a3"/><text transform="translate('+(X(1263)+19)+','+Y(1200)+') rotate(-90)" font-size="12" fill="#555">Dessert</text>';
+    s+='<rect x="'+(X(1340)-10)+'" y="'+(Y(1605)-34)+'" width="26" height="68" rx="4" fill="#0f5257"/><text transform="translate('+(X(1340)+8)+','+(Y(1605)+10)+') rotate(-90)" font-size="12" font-weight="600" fill="#fff">DJ</text>';
+    s+='<text transform="translate('+(X(1235)+5)+','+(Y(1700))+') rotate(-90)" font-size="13" fill="#4f6331" font-weight="600">Market Lights</text>';
+    // dance floor (open area beside DJ)
+    s+='<rect x="'+X(1440)+'" y="'+Y(1440)+'" width="'+(X(1840)-X(1440))+'" height="'+(Y(1705)-Y(1440))+'" rx="16" fill="#fbe7c6" stroke="#f0c98a" stroke-width="2" stroke-dasharray="8 6"/>';
+    s+='<text x="'+X(1640)+'" y="'+(Y(1572)-4)+'" text-anchor="middle" font-size="22" fill="#c2763a" font-family="DM Serif Display,Georgia,serif">Dance floor</text>';
+    s+='<text x="'+X(1640)+'" y="'+(Y(1572)+16)+'" text-anchor="middle" font-size="11" fill="#a07a55">open floor by the DJ (not labeled on Abbey\'s plan)</text>';
+    // string lights from the plan
+    const L=[[1400,1284,1947,1026],[1386,1302,1872,1447],[1872,1461,1325,1737],[1325,1742,1877,1856],[1877,1872,1386,2100]];
+    L.forEach(l=>{s+='<line x1="'+X(l[0])+'" y1="'+Y(l[1])+'" x2="'+X(l[2])+'" y2="'+Y(l[3])+'" stroke="#e6a23c" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round" opacity=".9"/>'});
+    // entrance
+    s+='<line x1="'+X(2096)+'" y1="'+Y(1574)+'" x2="'+(X(1886)+8)+'" y2="'+Y(1574)+'" stroke="#2d3436" stroke-width="3"/><path d="M'+X(1886)+' '+Y(1574)+' l14 -8 v16z" fill="#2d3436"/>';
+    s+='<text x="'+X(1990)+'" y="'+(Y(1574)-8)+'" text-anchor="middle" font-size="12" font-weight="600" fill="#2d3436">Guests enter</text>';
+    s+='<text x="'+X(1990)+'" y="'+(Y(1574)+18)+'" text-anchor="middle" font-size="10" fill="#6b7275">from courtyard</text><text x="'+X(1990)+'" y="'+(Y(1574)+30)+'" text-anchor="middle" font-size="10" fill="#6b7275">(bar, welcome &amp;</text><text x="'+X(1990)+'" y="'+(Y(1574)+42)+'" text-anchor="middle" font-size="10" fill="#6b7275">seating-chart table)</text>';
+    $("decor").innerHTML=s;
+  }
+  function shapeSvg(t,cnt){
+    const col=cnt>t.cap?"#d64545":(t.note?"#f59e42":"#1f8a8a");
+    if(t.shape==="round")return'<svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="#fff" stroke="'+col+'" stroke-width="2.5"/><text x="17" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="'+col+'">'+t.n+'</text></svg>';
+    if(t.dir==="v")return'<svg width="24" height="38" viewBox="0 0 24 38"><rect x="2" y="2" width="20" height="34" rx="2" fill="#fff" stroke="'+col+'" stroke-width="2.5"/><text x="12" y="24" text-anchor="middle" font-size="12" font-weight="600" fill="'+col+'">'+t.n+'</text></svg>';
+    return'<svg width="46" height="26" viewBox="0 0 46 26"><rect x="2" y="2" width="42" height="22" rx="2" fill="#fff" stroke="'+col+'" stroke-width="2.5"/><text x="23" y="18" text-anchor="middle" font-size="13" font-weight="600" fill="'+col+'">'+t.n+'</text></svg>';
+  }
+  const chip=(g,full)=>'<span class="chip'+(COUPLE.has(g.id)?" couple":"")+'" draggable="true" data-id="'+g.id+'" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="nm">'+esc(full?name(g):short(g))+'</span>'+(g.d?'<span class="di" title="'+esc(g.d)+'">'+dIcon(g.d)+'</span>':"")+'</span>';
+  function options(sel,c){
+    let o='<option value="0">Unassigned</option>';
+    TABLES.forEach(t=>{o+='<option value="'+t.n+'"'+(sel===t.n?" selected":"")+'>'+tLabel(t)+' ('+c[t.n]+'/'+t.cap+')</option>'});
+    return o;
+  }
+  const sortG=(a,b)=>(a.l+a.f).localeCompare(b.l+b.f);
+  const inTable=n=>GUESTS.filter(g=>A[g.id]===n);
+  const q=()=>$("q").value.trim().toLowerCase();
+  const match=g=>{const s=q();return!!s&&(name(g).toLowerCase().includes(s)||(g.d||"").toLowerCase().includes(s))};
+
+  function render(){
+    const c=counts();
+    const seated=Object.keys(A).length,un=GUESTS.length-seated,cap=TABLES.reduce((a,t)=>a+t.cap,0);
+    const over=TABLES.filter(t=>c[t.n]>t.cap);
+    $("count").textContent="☀ "+seated+" of "+GUESTS.length+" seated · "+un+" unassigned"+(over.length?" · "+over.length+" over capacity":"");
+    $("status").textContent=(updated?"Your changes are saved on this device (last edit "+new Date(updated).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+"). ":"Showing the published draft ("+SEATING_VERSION+"). ")+"Capacity "+cap+" seats across "+TABLES.length+" tables.";
+    // plan
+    const cv=$("canvas");cv.querySelectorAll(".tbl").forEach(e=>e.remove());
+    const hasQ=!!q();cv.classList.toggle("dim",hasQ);
+    TABLES.forEach(t=>{
+      const gs=inTable(t.n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||0);
+      const d=document.createElement("div");
+      d.className="tbl"+(t.note?" head":"")+(c[t.n]>t.cap?" overcap":c[t.n]===t.cap?" full":"");
+      d.dataset.t=t.n;
+      d.style.left=X(t.x)+"px";d.style.top=(Y(t.y)-76)+"px";
+      let seats=gs.map(g=>chip(g).replace('class="chip','class="chip'+(match(g)?" hit":""))).join("");
+      for(let i=gs.length;i<t.cap;i++)seats+='<span class="open"></span>';
+      d.innerHTML='<div class="th">'+shapeSvg(t,c[t.n])+'<div><b>Table '+t.n+'</b><small>'+esc(kind(t))+'</small></div><span class="cnt">'+c[t.n]+'/'+t.cap+'</span></div><div class="seats">'+seats+'</div>';
+      d.title=c[t.n]>t.cap?"Over capacity!":"";
+      cv.appendChild(d);
+    });
+    // unassigned
+    const s=q();
+    const list=GUESTS.filter(g=>!A[g.id]).sort(sortG);
+    const shown=s?GUESTS.filter(match).sort(sortG):list;
+    $("ucount").textContent=list.length+" left";
+    $("unassigned").innerHTML=(s?'<div class="empty" style="padding:2px 4px 6px;text-align:left">'+shown.length+' match'+(shown.length===1?"":"es")+' (all guests)</div>':"")+
+      (shown.length?shown.map(g=>'<div class="urow">'+chip(g,true)+'<select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>').join(""):'<div class="empty">'+(s?"No guests match.":"Everyone has a seat 🎉")+'</div>');
+    // list view
+    let h="";
+    TABLES.forEach(t=>{
+      const gs=inTable(t.n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||sortG(a,b));
+      h+='<div class="lt'+(t.note?" head":"")+(c[t.n]>t.cap?" overcap":"")+'"><h3>Table '+t.n+(t.note?" — "+esc(t.note):" — "+esc(kind(t)))+'<span>'+c[t.n]+'/'+t.cap+'</span></h3>'+
+        (gs.length?gs.map(g=>lrow(g,c)).join(""):'<div class="empty">No one yet</div>')+'</div>';
+    });
+    if(list.length)h+='<div class="lt overcap"><h3>Unassigned<span>'+list.length+'</span></h3>'+list.map(g=>lrow(g,c)).join("")+'</div>';
+    $("lgrid").innerHTML=h;
+    const dc=GUESTS.filter(g=>g.d).length;
+    $("lvsum").textContent=seated+" seated · "+un+" unassigned · "+dc+" dietary notes";
+  }
+  function lrow(g,c){return'<div class="lrow'+(match(g)?" hit":"")+'"><span class="n">'+esc(name(g))+(g.d?' '+dIcon(g.d)+'<span class="dn">'+esc(g.d)+'</span>':"")+'</span><select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>'}
+
+  /* ---- drag & drop ---- */
+  let dragId=null;
+  document.addEventListener("dragstart",e=>{const ch=e.target.closest&&e.target.closest(".chip");if(!ch)return;dragId=ch.dataset.id;ch.classList.add("dragging");hidePop();try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(_){}});
+  document.addEventListener("dragend",e=>{dragId=null;document.querySelectorAll(".dragging,.over").forEach(x=>x.classList.remove("dragging","over"))});
+  function target(e){return e.target.closest&&(e.target.closest(".tbl")||e.target.closest("#aside"))}
+  document.addEventListener("dragover",e=>{const t=target(e);if(!t||!dragId)return;e.preventDefault();e.dataTransfer.dropEffect="move";
+    document.querySelectorAll(".over").forEach(x=>{if(x!==t&&x!==$("unassigned"))x.classList.remove("over")});
+    if(t.id==="aside")$("unassigned").classList.add("over");else{$("unassigned").classList.remove("over");t.classList.add("over")}});
+  document.addEventListener("drop",e=>{const t=target(e);if(!t)return;e.preventDefault();const id=dragId||e.dataTransfer.getData("text/plain");if(!byId[id])return;
+    const n=t.id==="aside"?0:+t.dataset.t;dragId=null;setT(id,n);if(n){const c=counts();if(c[n]>tByN[n].cap)toast("Table "+n+" is over capacity ("+c[n]+"/"+tByN[n].cap+")")}});
+
+  /* ---- selects (mobile fallback) ---- */
+  document.addEventListener("change",e=>{if(e.target.matches("select[data-id]")){setT(e.target.dataset.id,e.target.value);hidePop()}});
+
+  /* ---- tap a chip on the plan for a popover ---- */
+  const pop=$("pop");
+  function hidePop(){pop.classList.remove("show")}
+  $("canvas").addEventListener("click",e=>{
+    const ch=e.target.closest(".chip");if(!ch){hidePop();return}
+    const g=byId[ch.dataset.id],c=counts();
+    pop.innerHTML='<b>'+esc(name(g))+'</b>'+(g.d?'<div class="dn">'+dIcon(g.d)+' '+esc(g.d)+'</div>':'')+'<select data-id="'+g.id+'">'+options(A[g.id]||0,c)+'</select>';
+    const r=ch.getBoundingClientRect();pop.classList.add("show");
+    const w=pop.offsetWidth,h=pop.offsetHeight;
+    pop.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+"px";
+    pop.style.top=(r.bottom+6+h>innerHeight?Math.max(8,r.top-h-6):r.bottom+6)+"px";
+    e.stopPropagation();
+  });
+  document.addEventListener("click",e=>{if(!e.target.closest("#pop")&&!e.target.closest("#canvas"))hidePop()});
+  addEventListener("scroll",hidePop,{passive:true});$("viewport").addEventListener("scroll",hidePop,{passive:true});
+
+  /* ---- zoom ---- */
+  let z=1,fit=true;
+  function applyZoom(){
+    const vw=$("viewport").clientWidth;
+    if(fit)z=Math.min(1,vw/900);
+    $("canvas").style.transform="scale("+z+")";
+    $("sizer").style.width=900*z+"px";$("sizer").style.height=1530*z+"px";
+    $("zLbl").textContent=Math.round(z*100)+"%";
+  }
+  $("zIn").onclick=()=>{fit=false;z=Math.min(1.6,z+.15);applyZoom()};
+  $("zOut").onclick=()=>{fit=false;z=Math.max(.3,z-.15);applyZoom()};
+  $("zFit").onclick=()=>{fit=true;applyZoom()};
+  addEventListener("resize",()=>{if(fit)applyZoom()});
+
+  /* ---- views ---- */
+  function view(v){document.body.classList.toggle("list",v==="list");$("vPlan").classList.toggle("on",v!=="list");$("vList").classList.toggle("on",v==="list");if(v!=="list")applyZoom()}
+  $("vPlan").onclick=()=>view("plan");$("vList").onclick=()=>view("list");
+  $("q").addEventListener("input",render);
+
+  /* ---- export / import / csv ---- */
+  function download(fn,txt,type){const b=new Blob([txt],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+  function sortedSeating(){const o={};GUESTS.slice().sort((a,b)=>(A[a.id]||99)-(A[b.id]||99)||sortG(a,b)).forEach(g=>{if(A[g.id])o[g.id]=A[g.id]});return o}
+  $("bExport").onclick=()=>{
+    const out={app:"ma-seating-chart",exported:new Date().toISOString(),baseVersion:SEATING_VERSION,shareCode:code(),
+      SEATING:sortedSeating(),
+      guests:GUESTS.map(g=>({id:g.id,name:name(g),table:A[g.id]||null,dietary:g.d||""}))};
+    download("seating.json",JSON.stringify(out,null,1),"application/json");toast("Downloaded seating.json");
+  };
+  $("bCsv").onclick=()=>{
+    const q2=s=>'"'+String(s).replace(/"/g,'""')+'"';
+    const rows=[["Table","Guest","Dietary"]];
+    GUESTS.slice().sort((a,b)=>(A[a.id]||99)-(A[b.id]||99)||sortG(a,b)).forEach(g=>rows.push([A[g.id]?"Table "+A[g.id]+(tByN[A[g.id]].note?" (Head)":""):"Unassigned",name(g),g.d||""]));
+    download("seating-chart.csv","\ufeff"+rows.map(r=>r.map(q2).join(",")).join("\r\n"),"text/csv");toast("Downloaded seating-chart.csv");
+  };
+  function copy(txt){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(txt);
+    return new Promise((res,rej)=>{const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand("copy")?res():rej()}catch(e){rej(e)}t.remove()});
+  }
+  $("bCopy").onclick=()=>{const c=code();copy(c).then(()=>toast("Share code copied — paste it to Maddie/Andrew")).catch(()=>openDlg("share",c))};
+  const dlg=$("dlg");
+  function openDlg(mode,c){
+    if(mode==="share"){$("dlgT").textContent="Share code";$("dlgP").textContent="Copy this code and send it. The other person taps Import and pastes it.";$("dlgTxt").value=c;$("dlgOk").textContent="Done";$("dlgFile").style.display="none"}
+    else{$("dlgT").textContent="Import seating";$("dlgP").textContent="Paste a share code (or the contents of seating.json), or choose an exported file. This replaces the arrangement on this device.";$("dlgTxt").value="";$("dlgOk").textContent="Load";$("dlgFile").style.display=""}
+    dlg.dataset.mode=mode;if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
+    if(mode==="share"){$("dlgTxt").select()}
+  }
+  const closeDlg=()=>{if(dlg.close)dlg.close();else dlg.removeAttribute("open")};
+  $("bImport").onclick=()=>openDlg("import");
+  $("dlgCancel").onclick=closeDlg;
+  $("dlgFile").onclick=()=>$("file").click();
+  $("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("dlgTxt").value=r.result;$("file").value=""};r.readAsText(f)};
+  $("dlgOk").onclick=()=>{
+    if(dlg.dataset.mode==="share"){closeDlg();return}
+    let o;try{o=parseAny($("dlgTxt").value)}catch(e){o=null}
+    if(!o){toast("Couldn't read that — paste a share code or seating.json");return}
+    const cl=clean(o);if(!Object.keys(cl).length&&!confirm("That arrangement has nobody seated. Load it anyway?"))return;
+    A=cl;save();render();closeDlg();toast("Loaded "+Object.keys(A).length+" seat assignments");
+  };
+  $("bPrint").onclick=()=>window.print();
+  $("bReset").onclick=()=>{if(confirm("Discard the changes on this device and load the published draft?"))resetToBase()};
+
+  /* ---- banner / toast ---- */
+  function showBanner(msg,btns){const b=$("banner");b.innerHTML='<span>'+esc(msg)+'</span>';btns.forEach(([l,f])=>{const x=document.createElement("button");x.className="btn";x.textContent=l;x.onclick=f;b.appendChild(x)});b.classList.add("show")}
+  function hideBanner(){$("banner").classList.remove("show")}
+  let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600)}
+
+  /* ---- share link support: page.html#MAS1.xxxx ---- */
+  load();decor();render();applyZoom();
+  if(/[?&]view=list/.test(location.search))view("list");
+  if(/MAS1\./.test(location.hash)){const o=parseCode(location.hash);if(o)showBanner("This link contains a shared seating arrangement.",[["Load it",()=>{A=clean(o);save();render();hideBanner();history.replaceState(null,"",location.pathname)}],["Ignore",hideBanner]])}
+})();
+</script>
+</body>
+</html>
