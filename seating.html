@@ -18,14 +18,14 @@ try{if(window.self!==window.top)document.documentElement.classList.add("embedded
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-10.3";
+const SEATING_VERSION = "2026-10-10.4";
 const SEATING = {
   "g066":1,"g067":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
   "g075":2,"g076":2,"g077":2,"g082":2,"g016":3,"g017":3,"g119":3,"g120":3,
   "g121":3,"g122":3,"g124":3,"g125":3,"g126":3,"g127":3,"g011":4,"g013":4,
   "g018":4,"g019":4,"g020":4,"g021":4,"g022":4,"g023":4,"g150":4,"g151":4,
-  "g001":5,"g002":5,"g003":5,"g007":5,"g008":5,"g009":5,"g078":5,"g079":5,
-  "g080":5,"g081":5,"g015":6,"g043":6,"g128":6,"g129":6,"g130":6,"g131":6,
+  "g002":5,"g003":5,"g005":5,"g007":5,"g008":5,"g009":5,"g078":5,"g079":5,
+  "g080":5,"g081":5,"g001":6,"g015":6,"g043":6,"g128":6,"g130":6,"g131":6,
   "g132":6,"g133":6,"g134":6,"g136":6,"g024":7,"g027":7,"g029":7,"g030":7,
   "g031":7,"g032":7,"g033":7,"g034":7,"g035":7,"g036":7,"g037":8,"g038":8,
   "g041":8,"g042":8,"g047":8,"g048":8,"g049":8,"g050":8,"g051":8,"g052":8,
@@ -43,7 +43,8 @@ const SEATING = {
 /* Wedding RSVPs marked Attending (exact duplicates removed). d = dietary note. */
 const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g002","f":"Caitlin","l":"Allocca","d":"Gluten free","m":"Gluten Free"},
-  {"id":"g003","f":"Dodi","l":"Allocca","d":"Gluten free","m":"Gluten Free"},
+  {"id":"g003","f":"Dodi","l":"Allocca","d":"Gluten free","m":"Gluten Free","x":"daughter"},
+  {"id":"g005","f":"Dodi","l":"Allocca","x":"mom"},
   {"id":"g007","f":"Will","l":"Allocca"},
   {"id":"g008","f":"Kathleen","l":"Antczak"},
   {"id":"g009","f":"Sam","l":"Antczak"},
@@ -66,7 +67,7 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g030","f":"Max","l":"Durham"},
   {"id":"g031","f":"Kieran","l":"Byrnes"},
   {"id":"g032","f":"Lauren","l":"Fisher"},
-  {"id":"g033","f":"Emily","l":"Chandler"},
+  {"id":"g033","f":"Emily","l":"Chandler","mn":1},
   {"id":"g034","f":"Everett","l":"Chandler","d":"No meat (from Welcome Party RSVP; wedding note blank)","c":"confirm: no meat?"},
   {"id":"g035","f":"Joanie","l":"Chandler"},
   {"id":"g036","f":"Grace","l":"Chandler"},
@@ -142,8 +143,7 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g126","f":"Elise","l":"Lucarelli"},
   {"id":"g127","f":"Jim","l":"Lucarelli"},
   {"id":"g128","f":"Virginia","l":"Lucarelli"},
-  {"id":"g129","f":"Max","l":"Lucarelli"},
-  {"id":"g130","f":"Atlas","l":"Lucarelli"},
+  {"id":"g130","f":"Atlas","l":"Lucarelli","mn":1},
   {"id":"g131","f":"Nina","l":"Lucarelli"},
   {"id":"g132","f":"Peter","l":"Lucarelli"},
   {"id":"g133","f":"Makenzye","l":"Lucarelli"},
@@ -293,6 +293,8 @@ main.planbox{min-width:0}
 .canvas .seat .ln,.canvas .seat .fn{display:block;overflow:hidden;white-space:nowrap}
 .canvas .seat .fn{font-weight:600}
 .canvas .seat .di{position:absolute;top:-7px;right:-6px;font-size:10px;line-height:1;background:#fff;border-radius:50%;padding:1px}
+.mb{display:inline-block;font-size:8.5px;font-weight:700;line-height:12px;min-width:12px;text-align:center;color:#fff;background:#5a6abf;border-radius:3px;padding:0 2px;margin-left:3px;vertical-align:1px}
+.canvas .seat .mb{position:absolute;bottom:-6px;left:-5px;margin:0}
 .canvas .seat.couple{background:#fff2e6;border-color:var(--sun)}
 .canvas .seat.hit{background:#fde68a;border-color:var(--sun)}
 .canvas .seat.empty{background:rgba(255,255,255,.35);border:1px dashed #cdb68a;box-shadow:none;cursor:default}
@@ -463,7 +465,8 @@ footer a{color:var(--teal);font-weight:600}
   const TN=TABLES.map(t=>t.n);
   const tByN={};TABLES.forEach(t=>tByN[t.n]=t);
   const COUPLE=new Set(["g066","g067"]);
-  const name=g=>g.f+" "+g.l;
+  const name=g=>g.f+" "+g.l+(g.x?" ("+g.x+")":"");
+  const MB=g=>g.mn?'<span class="mb" title="Minor">M</span>':"";
   const short=g=>g.f+" "+g.l.charAt(0)+".";
 
   /* ---- dietary icons ---- */
@@ -501,8 +504,11 @@ footer a{color:var(--teal);font-weight:600}
   function parseCode(c){
     const m=c.match(/MAS1\.([A-Za-z0-9_-]+)/);if(!m)return null;
     let b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
-    const raw=atob(b);const s=raw.split("|").pop();const o={};
-    GUESTS.forEach((g,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t)o[g.id]=t});
+    const raw=atob(b),parts=raw.split("|"),ver=parts.length>1?parts[0]:"",s=parts.pop(),o={};
+    // codes made before 2026-10-10.4 used the old guest order (Max Lucarelli in, Dodi (mom) out)
+    let ids=GUESTS.map(g=>g.id);
+    if(ver&&ver<"2026-10-10.4"){ids=ids.filter(x=>x!=="g005");ids.splice(ids.indexOf("g128")+1,0,"g129")}
+    ids.forEach((id,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t&&byId[id])o[id]=t});
     return o;
   }
   function parseAny(txt){
@@ -595,12 +601,12 @@ footer a{color:var(--teal);font-weight:600}
   }
   function seatHtml(g,x,y){
     if(!g)return'<span class="chip seat empty" style="left:'+x+'px;top:'+y+'px" draggable="false"></span>';
-    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+'" draggable="true" data-id="'+g.id+'" style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.f)+'</span><span class="ln">'+esc(g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+'</span>';
+    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+'" draggable="true" data-id="'+g.id+'" style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.x?g.f+" "+g.l:g.f)+'</span><span class="ln">'+esc(g.x?"("+g.x+")":g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+(g.mn?'<span class="mb" title="Minor">M</span>':"")+'</span>';
   }
   function fitNames(){
     document.querySelectorAll(".canvas .seat .fn,.canvas .seat .ln").forEach(e=>{e.style.fontSize="";const cw=e.clientWidth;if(!cw)return;let f=9.5;while(e.scrollWidth>cw&&f>6.5){f-=.25;e.style.fontSize=f+"px"}});
   }
-  const chip=(g,full)=>'<span class="chip'+(COUPLE.has(g.id)?" couple":"")+'" draggable="true" data-id="'+g.id+'" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="nm">'+esc(name(g))+'</span>'+(g.d?'<span class="di" title="'+esc(g.d)+'">'+dIcon(g.d)+'</span>':"")+'</span>';
+  const chip=(g,full)=>'<span class="chip'+(COUPLE.has(g.id)?" couple":"")+'" draggable="true" data-id="'+g.id+'" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="nm">'+esc(name(g))+'</span>'+MB(g)+(g.d?'<span class="di" title="'+esc(g.d)+'">'+dIcon(g.d)+'</span>':"")+'</span>';
   function options(sel,c){
     let o='<option value="0">Unassigned</option>';
     TABLES.forEach(t=>{o+='<option value="'+t.n+'"'+(sel===t.n?" selected":"")+'>'+tLabel(t)+' ('+c[t.n]+'/'+t.cap+')</option>'});
@@ -655,7 +661,7 @@ footer a{color:var(--teal);font-weight:600}
     const dc=GUESTS.filter(g=>g.d).length;
     $("lvsum").textContent=seated+" seated · "+un+" unassigned · "+dc+" dietary notes";
   }
-  function lrow(g,c){return'<div class="lrow'+(match(g)?" hit":"")+'"><span class="n">'+esc(name(g))+(g.d?' '+dIcon(g.d)+'<span class="dn">'+esc(g.d)+'</span>':"")+'</span><select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>'}
+  function lrow(g,c){return'<div class="lrow'+(match(g)?" hit":"")+'"><span class="n">'+esc(name(g))+MB(g)+(g.d?' '+dIcon(g.d)+'<span class="dn">'+esc(g.d)+'</span>':"")+'</span><select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>'}
 
   /* ---- drag & drop ---- */
   let dragId=null;
@@ -758,6 +764,7 @@ footer a{color:var(--teal);font-weight:600}
       let s=(t.note?"HEAD TABLE (TABLE "+t.n+")":"TABLE "+t.n)+": "+n+" guests total. "+dual+" Dual";
       sp.forEach(([m,l])=>{s+=", "+l.length+" "+m+" - "+l.map(name).join(", ")});
       const al=gs.filter(g=>g.a);if(al.length)s+=" (Allergy: "+al.map(g=>name(g)+" - "+g.a).join("; ")+")";
+      const mi=gs.filter(g=>g.mn);if(mi.length)s+=" ("+mi.length+" minor"+(mi.length>1?"s":"")+": "+mi.map(name).join(", ")+")";
       L.push(s);
     });
     const cf=GUESTS.filter(g=>g.c).sort(sortG);
@@ -767,8 +774,8 @@ footer a{color:var(--teal);font-weight:600}
     L.push("","Part 3 guest list by table");
     const tag=g=>g.m?" ("+g.m+")":g.a?" (Allergy: "+g.a+")":g.c?" ("+g.c+")":"";
     TABLES.forEach(t=>{const gs=inTable(t.n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||sortG(a,b));
-      L.push("Table "+t.n+(t.note?" (Head Table)":"")+": "+(gs.length?gs.map(g=>name(g)+tag(g)).join(", "):"(empty)"))});
-    if(un.length)L.push("Unassigned: "+un.map(g=>name(g)+tag(g)).join(", "));
+      L.push("Table "+t.n+(t.note?" (Head Table)":"")+": "+(gs.length?gs.map(g=>name(g)+(g.mn?" M":"")+tag(g)).join(", "):"(empty)"))});
+    if(un.length)L.push("Unassigned: "+un.map(g=>name(g)+(g.mn?" M":"")+tag(g)).join(", "));
     return L.join("\n");
   }
   $("bAbbey").onclick=()=>{const txt=abbeyText();openDlg("abbey",txt);copy(txt).then(()=>toast("Copied Part 2 + Part 3 for Abbey's form")).catch(()=>{})};
