@@ -14,7 +14,7 @@
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-10.1";
+const SEATING_VERSION = "2026-10-10.2";
 const SEATING = {
   "g066":1,"g067":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
   "g075":2,"g076":2,"g077":2,"g082":2,"g016":3,"g017":3,"g119":3,"g120":3,
@@ -169,7 +169,7 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g163","f":"Brendan","l":"Quigley"},
   {"id":"g165","f":"Mimi","l":"Rashid","d":"No pork"},
   {"id":"g166","f":"Ash","l":"Rashid","d":"No pork"},
-  {"id":"g167","f":"Julia","l":"Rivalta","d":"Dairy free"},
+  {"id":"g167","f":"Julia","l":"Rivalta"},
   {"id":"g168","f":"Joseph","l":"McGee","d":"Dairy free"},
   {"id":"g169","f":"McCarley","l":"Rouse"},
   {"id":"g171","f":"Kalin","l":"Schultz"},
@@ -264,9 +264,9 @@ main.planbox{min-width:0}
 .zoom .btn{padding:3px 10px}
 .viewport{overflow:auto;border-radius:16px;background:#fdf6e7;box-shadow:inset 0 0 0 1px #eadfc8;-webkit-overflow-scrolling:touch}
 .sizer{position:relative}
-.canvas{position:absolute;left:0;top:0;width:900px;height:1530px;transform-origin:0 0}
-.canvas svg.decor{position:absolute;left:0;top:0;width:900px;height:1530px}
-.tbl{position:absolute;width:200px;margin-left:-100px;background:rgba(255,255,255,.93);border:2px solid #cfe0dc;border-radius:14px;padding:5px 6px 6px;box-shadow:0 2px 8px rgba(15,82,87,.10);transition:border-color .15s,background .15s}
+.canvas{position:absolute;left:0;top:0;width:1130px;height:1990px;transform-origin:0 0}
+.canvas svg.decor{position:absolute;left:0;top:0;width:1130px;height:1990px}
+.tbl{position:absolute;width:286px;margin-left:-143px;background:rgba(255,255,255,.93);border:2px solid #cfe0dc;border-radius:14px;padding:5px 6px 6px;box-shadow:0 2px 8px rgba(15,82,87,.10);transition:border-color .15s,background .15s}
 .tbl:hover{z-index:5}
 .tbl.over{border-color:var(--teal);background:#eef8f7;z-index:6}
 .tbl.full .cnt{color:var(--teal)}
@@ -279,8 +279,10 @@ main.planbox{min-width:0}
 .th small{display:block;font-size:10px;color:var(--muted);font-weight:500}
 .cnt{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--sunset)}
 .seats{display:grid;grid-template-columns:1fr 1fr;gap:3px;min-height:20px}
-.seats .chip{max-width:none}
-.open{border:1px dashed #d9c9a5;border-radius:999px;height:18px}
+.seats .chip{max-width:none;white-space:normal;font-size:11px;line-height:14px;padding:2px 6px;border-radius:10px;min-height:20px;overflow:visible}
+.seats .chip .nm{overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+.th b{font-size:14px}
+.open{border:1px dashed #d9c9a5;border-radius:10px;min-height:20px}
 /* list view */
 .lv{display:none}
 .lgrid{columns:3 280px;column-gap:14px;margin-top:10px}
@@ -408,7 +410,7 @@ footer a{color:var(--teal);font-weight:600}
     <main class="planbox">
       <div class="planwrap">
         <div class="zoom"><button class="btn" id="zOut" aria-label="Zoom out">−</button><button class="btn" id="zFit">Fit</button><button class="btn" id="zIn" aria-label="Zoom in">+</button><span id="zLbl"></span><span class="znote" style="margin-left:auto">Layout from Abbey's floor plan (spacing stretched to fit names)</span></div>
-        <div class="viewport" id="viewport"><div class="sizer" id="sizer"><div class="canvas" id="canvas"><svg class="decor" id="decor" viewBox="0 0 900 1530" aria-hidden="true"></svg></div></div></div>
+        <div class="viewport" id="viewport"><div class="sizer" id="sizer"><div class="canvas" id="canvas"><svg class="decor" id="decor" viewBox="0 0 1130 1990" aria-hidden="true"></svg></div></div></div>
       </div>
       <section class="lv" id="lv">
         <div class="printhead">Andrew &amp; Maddie — Reception Seating · Sun Oct 25, 2026 · The Darlington House</div>
@@ -436,6 +438,7 @@ footer a{color:var(--teal);font-weight:600}
 <script>
 (function(){
   const KEY="maSeatingChart";
+  const CW=1130,CH=1990; // plan canvas size (px)
   const $=id=>document.getElementById(id);
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const byId={};GUESTS.forEach(g=>byId[g.id]=g);
@@ -500,8 +503,8 @@ footer a{color:var(--teal);font-weight:600}
   const kind=t=>t.note?t.note:(t.shape==="round"?"Round table":"Farm table");
 
   /* ---- floor plan geometry: plan coords -> canvas px (stretched so name chips fit) ---- */
-  const XK=[[1100,0],[1140,10],[1400,150],[1530,250],[1665,470],[1800,690],[1877,800],[2100,900]];
-  const YK=[[560,0],[956,190],[1060,262],[1128,372],[1213,444],[1348,626],[1420,720],[1720,900],[1793,990],[1915,1172],[1965,1224],[2063,1354],[2149,1406],[2300,1520]];
+  const XK=[[1100,0],[1140,10],[1400,170],[1530,290],[1665,600],[1800,910],[1877,1020],[2100,1130]];
+  const YK=[[560,0],[956,247],[1060,341],[1128,484],[1213,577],[1348,814],[1420,936],[1720,1170],[1793,1287],[1915,1524],[1965,1591],[2063,1760],[2149,1828],[2300,1976]];
   const pl=(K,v)=>{if(v<=K[0][0])return K[0][1];for(let i=1;i<K.length;i++){if(v<=K[i][0]){const[a,b]=K[i-1],[c,d]=K[i];return b+(v-a)*(d-b)/(c-a)}}return K[K.length-1][1]};
   const X=v=>Math.round(pl(XK,v)),Y=v=>Math.round(pl(YK,v));
   function rectP(x1,y1,x2,y2,fill,stroke,extra){return'<rect x="'+X(x1)+'" y="'+Y(y1)+'" width="'+(X(x2)-X(x1))+'" height="'+(Y(y2)-Y(y1))+'" fill="'+fill+'" stroke="'+(stroke||"none")+'" '+(extra||"")+'/>'}
@@ -542,7 +545,7 @@ footer a{color:var(--teal);font-weight:600}
     if(t.dir==="v")return'<svg width="24" height="38" viewBox="0 0 24 38"><rect x="2" y="2" width="20" height="34" rx="2" fill="#fff" stroke="'+col+'" stroke-width="2.5"/><text x="12" y="24" text-anchor="middle" font-size="12" font-weight="600" fill="'+col+'">'+t.n+'</text></svg>';
     return'<svg width="46" height="26" viewBox="0 0 46 26"><rect x="2" y="2" width="42" height="22" rx="2" fill="#fff" stroke="'+col+'" stroke-width="2.5"/><text x="23" y="18" text-anchor="middle" font-size="13" font-weight="600" fill="'+col+'">'+t.n+'</text></svg>';
   }
-  const chip=(g,full)=>'<span class="chip'+(COUPLE.has(g.id)?" couple":"")+'" draggable="true" data-id="'+g.id+'" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="nm">'+esc(full?name(g):short(g))+'</span>'+(g.d?'<span class="di" title="'+esc(g.d)+'">'+dIcon(g.d)+'</span>':"")+'</span>';
+  const chip=(g,full)=>'<span class="chip'+(COUPLE.has(g.id)?" couple":"")+'" draggable="true" data-id="'+g.id+'" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="nm">'+esc(name(g))+'</span>'+(g.d?'<span class="di" title="'+esc(g.d)+'">'+dIcon(g.d)+'</span>':"")+'</span>';
   function options(sel,c){
     let o='<option value="0">Unassigned</option>';
     TABLES.forEach(t=>{o+='<option value="'+t.n+'"'+(sel===t.n?" selected":"")+'>'+tLabel(t)+' ('+c[t.n]+'/'+t.cap+')</option>'});
@@ -567,7 +570,7 @@ footer a{color:var(--teal);font-weight:600}
       const d=document.createElement("div");
       d.className="tbl"+(t.note?" head":"")+(c[t.n]>t.cap?" overcap":c[t.n]===t.cap?" full":"");
       d.dataset.t=t.n;
-      d.style.left=X(t.x)+"px";d.style.top=(Y(t.y)-76)+"px";
+      d.style.left=X(t.x)+"px";d.style.top=(Y(t.y)-90)+"px";
       let seats=gs.map(g=>chip(g).replace('class="chip','class="chip'+(match(g)?" hit":""))).join("");
       for(let i=gs.length;i<t.cap;i++)seats+='<span class="open"></span>';
       d.innerHTML='<div class="th">'+shapeSvg(t,c[t.n])+'<div><b>Table '+t.n+'</b><small>'+esc(kind(t))+'</small></div><span class="cnt">'+c[t.n]+'/'+t.cap+'</span></div><div class="seats">'+seats+'</div>';
@@ -629,9 +632,9 @@ footer a{color:var(--teal);font-weight:600}
   let z=1,fit=true;
   function applyZoom(){
     const vw=$("viewport").clientWidth;
-    if(fit)z=Math.min(1,vw/900);
+    if(fit)z=Math.min(1,vw/CW);
     $("canvas").style.transform="scale("+z+")";
-    $("sizer").style.width=900*z+"px";$("sizer").style.height=1530*z+"px";
+    $("sizer").style.width=CW*z+"px";$("sizer").style.height=CH*z+"px";
     $("zLbl").textContent=Math.round(z*100)+"%";
   }
   $("zIn").onclick=()=>{fit=false;z=Math.min(1.6,z+.15);applyZoom()};
