@@ -7,21 +7,22 @@
 <title>Andrew &amp; Maddie's Wedding Actions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script>
 /* ================= EDIT HERE =================
    To mark a task done: change done:false -> done:true on its line,
+   (optional fields: link:"https://...", linkText:"label")
    then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
    and update LAST_UPDATED. */
-const DATA_VERSION = "2026-10-10.8";
-const LAST_UPDATED = "Sat Oct 10, 2026, 9:30 AM PT";
+const DATA_VERSION = "2026-10-10.9";
+const LAST_UPDATED = "Sat Oct 10, 2026, 9:33 AM PT";
 const WEDDING_DATE = "2026-10-25";
 const TASKS = [
-  {id:1,  task:"Fill out Chuck's Final Guest Count form (Part 1: count 154, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
+  {id:1,  task:"Fill out Chuck's Final Guest Count form, Part 1 (count, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
   {id:2,  task:"Confirm Piatti 7-table patio layout with Maddie, then tell Kasey", category:"Rehearsal dinner", due:"2026-10-10", note:"Sent Oct 10 with headcount 58.", done:true},
-  {id:3,  task:"Get Bernardo's updated BevMo invoice; check prices and stock (Pusser's, Stone Pilsner)", category:"Alcohol", due:"2026-10-13", note:"Nudged Oct 9. Needs to be locked by Oct 13.", done:false},
+  {id:3,  task:"Get Bernardo's updated BevMo invoice; check prices and stock", category:"Alcohol", due:"2026-10-13", note:"Pusser's, Stone Pilsner. Nudged Oct 9; lock by Oct 13.", done:false},
   {id:4,  task:"Send Chuck the final alcohol list for a thumbs up + ask about nutmeg", category:"Alcohol", due:"2026-10-14", note:"Sent Oct 10 with the M+A Wedding Drinks PDF; asked about triple sec, limes, ice, nutmeg. Waiting on Chuck.", done:true},
-  {id:5,  task:"Buy 50+ coconut waters at the grocery store", category:"Pickups & errands", due:"2026-10-16", note:"By Fri Oct 16. Drop off at Darlington the wedding morning.", done:false},
+  {id:5,  task:"Buy 50+ coconut waters at the grocery store", category:"Pickups & errands", due:"2026-10-16", note:"Drop off at Darlington the wedding morning.", done:false},
   {id:6,  task:"Abbey final payment", category:"Payments", due:"2026-10-15", note:"On hold until Chuck sends the balance.", done:false},
   {id:7,  task:"Piatti final menu due", category:"Rehearsal dinner", due:"2026-10-17", note:"Apps: 1 platter each.", done:false},
   {id:8,  task:"Piatti final headcount (58)", category:"Rehearsal dinner", due:"2026-10-21", note:"Told Kasey 58 on Oct 10; confirm by Oct 21.", done:false},
@@ -30,98 +31,95 @@ const TASKS = [
   {id:11, task:"DJ Zoom with Brian, 11am PT", category:"Music", due:"2026-10-21", note:"Zoom: https://us06web.zoom.us/j/87422350715", done:false},
   {id:12, task:"Practice first dance with Maddie", category:"Music", due:"2026-10-17", note:"", done:false},
   {id:21, task:"Practice mother-son dance with Mom", category:"Music", due:"2026-10-21", note:"", done:false},
-  {id:13, task:"Finalize reception table assignments (seating chart)", category:"Seating", due:"2026-10-12", note:"Draft live (link in footer), 154 guests. Susan Allison and Nate Witherell at the head table for now.", done:false},
-  {id:20, task:"Send Chuck the table assignments (form Parts 2-3)", category:"Seating", due:"2026-10-15", note:"Use the 'Copy for Abbey form' button on the seating chart once it's final.", done:false},
-  {id:15, task:"Buy seating display supplies: poster boards, paper clips, brown yarn (not lights)", category:"Pickups & errands", due:"2026-10-11", note:"One poster board per table, guest names on paper clips; punch a hole in each board and weave the yarn through to hang them.", done:false},
+  {id:13, task:"Finalize reception table assignments (seating chart)", category:"Seating", due:"2026-10-12", note:"Draft below, 154 guests. Susan Allison and Nate Witherell at the head table for now.", done:false},
+  {id:20, task:"Fill out Chuck's Final Guest Count form with table assignments, then email Chuck it's done", category:"Seating", due:"2026-10-15", note:"Use Copy for Abbey form on the seating chart; then email Chuck that it's submitted and ask if he has questions.", link:"https://wedgewoodweddings-my.sharepoint.com/:w:/p/meganlessert/IQCwjZXV0SEzQ6nPmfPmIHPEAbPBaURFyHXmN43M6EeLMtA?e=ldmY9B", linkText:"Final Guest Count form", done:false},
+  {id:15, task:"Buy seating display supplies: poster boards, paper clips, brown yarn", category:"Pickups & errands", due:"2026-10-11", note:"One poster board per table, guest names on paper clips; punch a hole in each board and weave the yarn through to hang them.", done:false},
   {id:14, task:"Ceremony seating: decide reserved front rows for family (optional)", category:"Seating", due:"2026-10-18", note:"From the original checklist; Abbey doesn't need it. Usually just 'Reserved' signs on the first rows for parents and grandmothers.", done:false},
-  {id:16, task:"Print the bar sign + get table runners", category:"Pickups & errands", due:"2026-10-18", note:"Bar sign = the drink menu sign we designed (24x60 banner or 24x36 poster), not the PDF sent to Chuck. Runners 9-10 ft.", done:false},
+  {id:16, task:"Print the bar sign and get table runners", category:"Pickups & errands", due:"2026-10-18", note:"Bar sign = our drink menu sign (24x60 banner or 24x36 poster), not the PDF sent to Chuck. Runners 9-10 ft.", done:false},
   {id:17, task:"Finalize Maddie's photo people list", category:"Photos", due:"2026-10-16", note:"Maddie is handling.", done:false},
   {id:18, task:"Day-of event insurance sent to Darlington", category:"Insurance", due:"2026-10-09", note:"", done:true},
   {id:19, task:"Nudge Bernardo for updated quote", category:"Alcohol", due:"2026-10-09", note:"", done:true},
-  {id:22, task:"Finalize Wheat & Water welcome-drinks slideshow: load all photos into the Apple shared album, with as many guests as we have pictures of", category:"Welcome drinks", due:"2026-10-17", note:"Photos live in Andrew's Apple shared album.", done:false},
+  {id:22, task:"Finalize Wheat & Water slideshow: add photos of as many guests as we have to the shared album", category:"Welcome drinks", due:"2026-10-17", note:"Apple shared album: M&A Welcome Party Slideshow", done:false},
 ];
 /* ============================================= */
 </script>
 <style>
-:root{--sun:#f59e42;--sunset:#e8673c;--coral:#f28b6d;--sand:#f3e3c3;--cream:#fffaf0;--teal:#1f8a8a;--deep:#0f5257;--ink:#2d3436;--muted:#6b7275}
+:root{--sun:#f59e42;--sunset:#e8673c;--coral:#f28b6d;--sand:#f3e3c3;--cream:#fffaf0;--teal:#1f8a8a;--deep:#0f5257;--ink:#2d2a26;--muted:#7a736a}
 *{box-sizing:border-box}
-body{margin:0;font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--cream);line-height:1.45;-webkit-text-size-adjust:100%}
-header{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffd9a0 0%,#ffc58a 38%,#f8a873 62%,#7cc6c0 63%,#4fa9a6 100%);padding:28px 20px 70px;text-align:center}
-header .sun{position:absolute;top:14px;right:6%;width:110px;height:110px}
-header .palm{position:absolute;bottom:0;left:2%;width:120px;height:200px}
-header .waves{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:40px;display:block}
-.htext{position:relative;z-index:2;max-width:720px;margin:0 auto}
-h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(30px,6.5vw,52px);line-height:1.05;margin:8px 0 6px;color:var(--deep);text-shadow:0 1px 0 rgba(255,255,255,.5)}
-.sub{font-size:15px;font-weight:500;color:#5a3b22;margin:0}
-.count{display:inline-block;margin-top:12px;background:rgba(255,250,240,.88);color:var(--sunset);font-weight:600;padding:6px 16px;border-radius:999px;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-main{max-width:760px;margin:-34px auto 0;padding:0 14px 30px;position:relative;z-index:3}
-.card{background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(15,82,87,.10);padding:16px 18px}
-.prog-top{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;color:var(--deep);margin-bottom:8px}
-.prog-top span:last-child{color:var(--muted);font-weight:500;font-size:14px}
-.bar{height:12px;background:var(--sand);border-radius:999px;overflow:hidden}
+body{margin:0;font-family:"EB Garamond",Garamond,Georgia,serif;font-size:18px;color:var(--ink);background:var(--cream);line-height:1.4;-webkit-text-size-adjust:100%;font-variant-numeric:lining-nums}
+button{font-family:inherit}
+header{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffd9a0 0%,#ffc58a 40%,#f8a873 64%,#7cc6c0 65%,#4fa9a6 100%);padding:26px 16px 64px;text-align:center}
+header .sun{position:absolute;top:12px;right:5%;width:100px;height:100px}
+header .palm{position:absolute;bottom:0;left:2%;width:110px;height:185px}
+header .waves{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:36px;display:block}
+.htext{position:relative;z-index:2}
+h1{font-weight:600;font-size:clamp(18px,5.6vw,54px);line-height:1.1;letter-spacing:.005em;white-space:nowrap;margin:0 0 6px;color:var(--deep);text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.sub{font-size:clamp(15px,2.4vw,19px);font-style:italic;color:#5a3b22;margin:0}
+.sub a{color:var(--deep);font-style:normal;font-weight:600;text-decoration:none;white-space:nowrap}
+.sub b{color:var(--sunset);font-style:normal;font-weight:600;white-space:nowrap}
+main{max-width:740px;margin:-26px auto 0;padding:0 14px 24px;position:relative;z-index:3}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(15,82,87,.10);padding:12px 18px 14px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;color:var(--deep);margin-bottom:7px;font-size:18px}
+.prog-top span:last-child{color:var(--muted);font-weight:500}
+.bar{height:9px;background:var(--sand);border-radius:999px;overflow:hidden}
 .bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--sunset));border-radius:999px;transition:width .4s}
-.filters{display:flex;flex-wrap:wrap;gap:8px;overflow-x:auto;padding:14px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.filters{display:flex;flex-wrap:wrap;gap:7px;overflow-x:auto;padding:14px 2px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .filters::-webkit-scrollbar{display:none}
-.filters button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:500;border:1.5px solid #e2d3b5;background:#fff;color:var(--ink);padding:6px 13px;border-radius:999px;cursor:pointer}
+.filters button{flex:0 0 auto;font-size:16px;font-weight:500;border:1px solid #e2d3b5;background:#fff;color:var(--ink);padding:3px 13px;border-radius:999px;cursor:pointer}
 .filters button.on{background:var(--deep);border-color:var(--deep);color:#fff}
-.group{margin-top:18px}
-.ghead{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--teal);margin:0 0 8px 4px}
+.group{margin-top:16px}
+.ghead{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin:0 0 7px 4px}
 .ghead::after{content:"";flex:1;height:1px;background:#e8dcc4}
 .ghead.hot{color:var(--sunset)}
-.item{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:14px;padding:13px 14px;margin-bottom:9px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:5px solid transparent;transition:opacity .2s}
+.item{display:flex;gap:10px;align-items:flex-start;background:#fff;border-radius:14px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:4px solid transparent;transition:opacity .2s}
 .item.soon{border-left-color:var(--sun);background:#fff6e8}
 .item.overdue{border-left-color:#d64545;background:#fff0ec}
 .item.done{opacity:.5;background:#fff;border-left-color:transparent}
 .item.done .t{text-decoration:line-through}
-.item input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:24px;height:24px;margin:1px 0 0;border:2px solid var(--teal);border-radius:7px;cursor:pointer;display:grid;place-items:center;background:#fff}
+.item input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--teal);border-radius:6px;cursor:pointer;display:grid;place-items:center;background:#fff}
 .item input:checked{background:var(--teal)}
 .item input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
 .body{flex:1;min-width:0}
-.t{font-weight:500;font-size:15.5px;overflow-wrap:anywhere}
-.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:12.5px}
-.pill{padding:2px 10px;border-radius:999px;font-weight:600;font-size:11.5px;color:#fff;white-space:nowrap}
-.due{color:var(--muted);font-weight:500}
-.flag{font-weight:600;color:var(--sunset)}
+.t{font-weight:500;font-size:19px;line-height:1.3;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:4px;font-size:15px}
+.pill{padding:0 9px;border-radius:999px;font-weight:600;font-size:13.5px;line-height:1.55;color:#fff;white-space:nowrap}
+.flag{font-weight:600;color:var(--sunset);font-style:italic}
 .overdue .flag{color:#c23a3a}
-.note{margin-top:6px;font-size:13.5px;color:#555;overflow-wrap:anywhere}
-.note a{color:var(--teal);font-weight:600}
-.empty{text-align:center;color:var(--muted);padding:30px}
-footer{text-align:center;font-size:12.5px;color:var(--muted);padding:10px 16px 34px}
-footer button{font:inherit;font-size:12px;background:none;border:none;color:var(--teal);text-decoration:underline;cursor:pointer}
-@media (max-width:560px){
- header{padding:22px 16px 62px}
- header .sun{width:78px;height:78px;top:-20px;right:-20px}
- .filters{flex-wrap:nowrap}
- header .palm{width:78px;height:130px;left:-6px}
- .htext{padding:0 34px}
- .sub{font-size:13.5px}
- .count{font-size:14px}
-}
-.jump{display:inline-block;margin:10px 0 0 8px;background:rgba(15,82,87,.88);color:#fff;font-weight:600;padding:6px 14px;border-radius:999px;font-size:14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.seatsec{max-width:1400px;margin:10px auto 0;padding:0 14px 10px;scroll-margin-top:10px}
-.seathead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 4px 10px}
-.seathead h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:30px;color:var(--deep);margin:0}
-.seathead a{color:var(--teal);font-weight:600;font-size:14px}
+.note{margin-top:4px;font-size:16px;color:#5b554e;overflow-wrap:anywhere}
+.note a,.lnk{color:var(--teal);font-weight:600}
+.lnk{display:inline-block;margin-top:5px;font-size:16px}
+footer{text-align:center;font-size:15px;color:var(--muted);padding:6px 16px 30px;line-height:1.6}
+footer button{font-size:15px;background:none;border:none;padding:0;color:var(--teal);text-decoration:underline;cursor:pointer}
+.seatsec{max-width:1400px;margin:14px auto 0;padding:0 14px 8px;scroll-margin-top:10px}
+.seathead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 4px 8px}
+.seathead h2{font-weight:600;font-size:30px;color:var(--deep);margin:0}
+.seathead a{color:var(--teal);font-weight:600;font-size:16px}
 .seatframe{display:block;width:100%;height:85vh;min-height:560px;border:0;border-radius:16px;background:var(--cream);box-shadow:0 4px 18px rgba(15,82,87,.10)}
-@media (max-width:560px){.seatframe{height:90vh}.seathead h2{font-size:25px}.jump{font-size:13.5px;margin-left:0}}
-/* ---- drag-to-reschedule ---- */
-.hint{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:12.5px;color:var(--muted);margin:2px 4px 0}
-.hint b{color:var(--deep);font-weight:600}
-.hint button,.movedbtn{font:inherit;font-size:12px;font-weight:600;border:1.5px solid var(--coral);background:#fff;color:var(--sunset);padding:3px 11px;border-radius:999px;cursor:pointer}
+@media (max-width:560px){
+ header{padding:20px 8px 56px}
+ header .sun{width:70px;height:70px;top:-18px;right:-18px}
+ header .palm{width:64px;height:108px;left:-8px}
+ .filters{flex-wrap:nowrap}
+ .sub{padding:0 30px}
+ .seatframe{height:90vh}.seathead h2{font-size:25px}
+}
+/* drag-to-reschedule */
+.hint{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:15px;font-style:italic;color:var(--muted);margin:4px 4px 0}
+.movedbtn{font-size:14.5px;font-weight:600;font-style:normal;border:1px solid var(--coral);background:#fff;color:var(--sunset);padding:1px 11px;border-radius:999px;cursor:pointer}
 .group[data-day]{border-radius:14px;transition:background .15s,box-shadow .15s}
 .group.over{background:rgba(245,158,66,.16);box-shadow:0 0 0 2px var(--sun)}
 .group.over .ghead{color:var(--sunset)}
-.group.emptyday{margin-top:10px}
-.group.emptyday .ghead{margin-bottom:4px;opacity:.8}
-.dz{border:1.5px dashed #e6d4b0;border-radius:12px;padding:6px 12px;font-size:12.5px;color:#b59c72;text-align:center;background:rgba(255,255,255,.5)}
+.group.emptyday{margin-top:8px}
+.group.emptyday .ghead{margin-bottom:3px;opacity:.75}
+.dz{border:1px dashed #e6d4b0;border-radius:12px;padding:3px 12px;font-size:15px;font-style:italic;color:#b59c72;text-align:center}
 .group.wed .ghead{color:var(--sunset)}
-.grip{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;justify-content:center;width:28px;margin:-13px -6px -13px -12px;padding-left:4px;color:#b89c6c;font-size:16px;letter-spacing:-3px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;border-radius:10px 0 0 10px}
+.grip{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;justify-content:center;width:26px;margin:-11px -4px -11px -12px;padding-left:2px;color:#b89c6c;font-size:16px;letter-spacing:-3px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;border-radius:10px 0 0 10px}
 .grip:hover{color:var(--sun);background:rgba(245,158,66,.08)}
 @media (pointer:fine){.item{cursor:grab}.item .body{cursor:auto}}
 .item.dragsrc{opacity:.35}
-.ghost{position:fixed;left:0;top:0;z-index:1000;pointer-events:none;margin:0;opacity:.95;box-shadow:0 12px 30px rgba(15,82,87,.28);transform-origin:20px 20px;rotate:1.5deg}
+.ghost{position:fixed;left:0;top:0;z-index:1000;pointer-events:none;margin:0;opacity:.95;box-shadow:0 12px 30px rgba(15,82,87,.28);rotate:1.5deg}
 body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !important}
-.moved{font-weight:600;font-size:11.5px;color:var(--teal);background:#e3f4f2;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.moved{font-weight:600;font-size:13.5px;color:var(--teal);background:#e3f4f2;border-radius:999px;padding:0 9px;white-space:nowrap}
 @keyframes pop{0%{box-shadow:0 0 0 3px var(--sun)}100%{box-shadow:0 1px 6px rgba(0,0,0,.06)}}
 .item.justmoved{animation:pop 1.4s ease-out}
 </style>
@@ -151,9 +149,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   </svg>
   <div class="htext">
     <h1>Andrew &amp; Maddie's Wedding Actions</h1>
-    <p class="sub">Oct 25, 2026 · Darlington House, La Jolla</p>
-    <div class="count" id="count"></div>
-    <a class="jump" href="#seating">🪑 Seating chart ↓</a>
+    <p class="sub">Oct 25 · Darlington House, La Jolla · <b id="count"></b> · <a href="#seating">Seating ↓</a></p>
   </div>
   <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 20 C150 0 300 40 450 20 S750 0 900 20 S1100 40 1200 18 V40 H0Z" fill="#fffaf0"/>
@@ -169,14 +165,12 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   <div id="list"></div>
 </main>
 <section class="seatsec" id="seating">
-  <div class="seathead"><h2>Seating Chart</h2><a href="seating.html?v=2026-10-10.9" target="_blank" rel="noopener">Open full screen ↗</a></div>
-  <iframe class="seatframe" src="seating.html?v=2026-10-10.9" title="Andrew &amp; Maddie's Seating Chart"></iframe>
+  <div class="seathead"><h2>Seating Chart</h2><a href="seating.html?v=2026-10-10.10" target="_blank" rel="noopener">Open full screen ↗</a></div>
+  <iframe class="seatframe" src="seating.html?v=2026-10-10.10" title="Andrew &amp; Maddie's Seating Chart"></iframe>
 </section>
 <footer>
-  <div style="margin-bottom:6px"><a href="seating.html?v=2026-10-10.9" style="color:var(--teal);font-weight:600;font-size:14px">Seating chart (full screen) →</a></div>
-  <div>Last updated: <span id="updated"></span></div>
-  <div>Checkmarks you tap are saved on this device only. <button id="reset">Reset my checkmarks</button></div>
-  <div>Due dates you drag to a new day are saved on this device only. <button id="resetDates">Reset dates</button></div>
+  <div>Updated <span id="updated"></span></div>
+  <div>Checkmarks and dragged dates are saved on this device only · <button id="reset">Reset checkmarks</button> · <button id="resetDates">Reset dates</button></div>
 </footer>
 <script>
 (function(){
@@ -231,8 +225,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
   }
   function renderHint(){
     const n=Object.keys(moves).length;
-    document.getElementById("hint").innerHTML='<span>🌴 Drag a task by its <b>⋮⋮</b> handle onto another day to change its date.</span>'+
-      (n?'<button class="movedbtn" data-reset-dates>↺ Reset dates ('+n+' moved)</button>':"");
+    document.getElementById("hint").innerHTML='<span>Drag a task (⋮⋮) to another day to move it.</span>'+
+      (n?'<button class="movedbtn" data-reset-dates>↺ Reset '+n+' moved</button>':"");
   }
   function cardHTML(t,today){
     const dn=isDone(t),due=dueOf(t),mv=moves[t.id];let cls="",flag="";
@@ -240,10 +234,10 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing !i
     if(dn)cls="done";
     return '<div class="item '+cls+'" data-id="'+t.id+'"><span class="grip" title="Drag to another day" aria-hidden="true">⋮⋮</span><input type="checkbox" aria-label="Mark done" data-id="'+t.id+'"'+(dn?" checked":"")+'>'+
       '<div class="body"><div class="t">'+esc(t.task)+'</div><div class="meta"><span class="pill" style="background:'+(COLORS[t.category]||"#888")+'">'+esc(t.category)+'</span>'+
-      '<span class="due">'+(due?"Due "+fmt(due):"Anytime before wedding")+'</span>'+
-      (mv?'<span class="moved" title="You moved this on this device">↻ moved · was '+esc(mv.baseDue?fmt(mv.baseDue):"anytime")+'</span>':"")+
+      (mv?'<span class="moved" title="You moved this on this device">moved · was '+esc(mv.baseDue?fmt(mv.baseDue):"anytime")+'</span>':"")+
       (flag?'<span class="flag">'+flag+'</span>':"")+'</div>'+
-      (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+'</div></div>';
+      (t.note?'<div class="note">'+linkify(t.note)+'</div>':"")+
+      (t.link?'<a class="lnk" href="'+esc(t.link)+'" target="_blank" rel="noopener">'+esc(t.linkText||"Open link")+' ↗</a>':"")+'</div></div>';
   }
   function render(){
     const todayS=todayPT(),today=dnum(todayS);
