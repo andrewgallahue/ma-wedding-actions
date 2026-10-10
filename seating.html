@@ -18,7 +18,7 @@ try{if(window.self!==window.top)document.documentElement.classList.add("embedded
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-10.7";
+const SEATING_VERSION = "2026-10-10.8";
 const SEATING = {
   "g001":1,"g066":1,"g067":1,"g198":1,"g011":2,"g013":2,"g018":2,"g019":2,
   "g020":2,"g021":2,"g095":2,"g096":2,"g150":2,"g151":2,"g016":3,"g017":3,
@@ -238,6 +238,8 @@ h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(
 .seg button.on{background:var(--deep);color:#fff}
 .btn{font:inherit;font-size:13px;font-weight:500;border:1.5px solid #e2d3b5;background:#fff;color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.reset{background:var(--deep);border-color:var(--deep);color:#fff;font-weight:600}
+.btn.reset:hover{background:#0b3f43;color:#fff}
 .btn.primary{background:var(--sunset);border-color:var(--sunset);color:#fff}
 .btn.primary:hover{background:#d65a31;color:#fff}
 .spacer{flex:1}
@@ -408,6 +410,7 @@ footer a{color:var(--teal);font-weight:600}
   <div class="card toolbar-card">
     <div class="toolbar">
       <div class="seg" role="tablist"><button id="vPlan" class="on">Floor plan</button><button id="vList">List view</button></div>
+      <button class="btn reset" id="bReset" title="Discard edits on this device and show the latest published layout">↻ Reset to latest published</button>
       <span class="spacer"></span>
       <button class="btn primary" id="bExport" title="Download seating.json">⬇ Export</button>
       <button class="btn" id="bImport" title="Load an exported file or share code">⬆ Import</button>
@@ -415,7 +418,6 @@ footer a{color:var(--teal);font-weight:600}
       <button class="btn" id="bAbbey" title="Part 2 + Part 3 text in Abbey's format">📝 Copy for Abbey form</button>
       <button class="btn" id="bCsv" title="Table, Guest, Dietary — for Chuck">Download CSV</button>
       <button class="btn" id="bPrint">Print list</button>
-      <button class="btn" id="bReset" title="Discard your changes and load the published draft">Reset to published</button>
     </div>
     <div class="status" id="status" style="margin-top:6px"></div>
     <div class="banner" id="banner"></div>
@@ -490,9 +492,10 @@ footer a{color:var(--teal);font-weight:600}
   const clean=o=>{const r={};Object.keys(o||{}).forEach(k=>{const t=+o[k];if(byId[k]&&tByN[t])r[k]=t});return r};
   function load(){
     let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
-    if(s&&s.a){A=clean(s.a);updated=s.t||null;
-      if(s.base!==SEATING_VERSION)showBanner("A newer published draft ("+SEATING_VERSION+") is available.",[["Load published draft",()=>{resetToBase();hideBanner()}],["Keep mine",()=>{save();hideBanner()}]]);
-    }else A=clean(SEATING);
+    // a local draft only survives while it was made on top of the current published version;
+    // when SEATING_VERSION changes, the newly published layout wins automatically
+    if(s&&s.a&&s.base===SEATING_VERSION){A=clean(s.a);updated=s.t||null}
+    else{if(s){try{localStorage.removeItem(KEY)}catch(e){}}A=clean(SEATING);updated=null}
   }
   function save(){updated=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify({base:SEATING_VERSION,a:A,t:updated}))}catch(e){}}
   function resetToBase(){A=clean(SEATING);try{localStorage.removeItem(KEY)}catch(e){}updated=null;render();toast("Loaded the published draft")}
@@ -783,7 +786,7 @@ footer a{color:var(--teal);font-weight:600}
   }
   $("bAbbey").onclick=()=>{const txt=abbeyText();openDlg("abbey",txt);copy(txt).then(()=>toast("Copied Part 2 + Part 3 for Abbey's form")).catch(()=>{})};
   $("bPrint").onclick=()=>window.print();
-  $("bReset").onclick=()=>{if(confirm("Discard the changes on this device and load the published draft?"))resetToBase()};
+  $("bReset").onclick=()=>{if(!updated||confirm("Discard the edits on this device and show the latest published layout ("+SEATING_VERSION+")?"))resetToBase()};
 
   /* ---- banner / toast ---- */
   function showBanner(msg,btns){const b=$("banner");b.innerHTML='<span>'+esc(msg)+'</span>';btns.forEach(([l,f])=>{const x=document.createElement("button");x.className="btn";x.textContent=l;x.onclick=f;b.appendChild(x)});b.classList.add("show")}
