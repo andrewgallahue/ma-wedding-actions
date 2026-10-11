@@ -18,7 +18,7 @@ try{if(window.self!==window.top)document.documentElement.classList.add("embedded
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-10.10";
+const SEATING_VERSION = "2026-10-11.1";
 const SEATING = {
   "g001":1,"g037":1,"g038":1,"g066":1,"g067":1,"g171":1,"g172":1,"g190":1,
   "g191":1,"g198":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
@@ -302,6 +302,11 @@ main.planbox{min-width:0}
 .canvas .seat.couple{background:#fff2e6;border-color:var(--sun)}
 .canvas .seat.hit{background:#fde68a;border-color:var(--sun)}
 .canvas .seat.empty{background:rgba(255,255,255,.35);border:1px dashed #cdb68a;box-shadow:none;cursor:default}
+.canvas .seat.sover{outline:2.5px solid var(--sunset);outline-offset:1px;background:#fff2e0;z-index:7}
+.picking .canvas .seat{cursor:pointer}.picking .canvas .seat.empty{background:#fff7ea;border-color:var(--sunset)}
+.canvas .seat.picked{outline:2.5px solid var(--teal);outline-offset:1px}
+.pop .pick{display:block;width:100%;margin-top:6px}
+.lrow .sn{display:inline-block;min-width:1.6em;color:var(--muted);font-size:.85em}
 /* list view */
 .lv{display:none}
 .lgrid{columns:3 280px;column-gap:14px;margin-top:10px}
@@ -427,7 +432,7 @@ footer a{color:var(--teal);font-weight:600}
       <div class="ahead"><h2>Unassigned guests</h2><span id="ucount"></span></div>
       <input class="search" id="q" type="search" placeholder="Search all guests…" autocomplete="off">
       <div id="unassigned" aria-label="Unassigned guests. Drop a guest here to unseat them."></div>
-      <div class="legend">Drag a name onto a table, or use its dropdown. Drag back here to unassign. Tap a name on the plan for options.<br>
+      <div class="legend">Drag a name onto a seat (drop on a taken seat to swap), or tap a name and then tap a seat. Drag back here to unassign. Tap a name on the plan for options.<br>
         <span id="legend"></span></div>
     </aside>
     <main class="planbox">
@@ -488,33 +493,59 @@ footer a{color:var(--teal);font-weight:600}
 
   /* ---- state ---- */
   let A={};          // guestId -> table number
+  let SP={};         // guestId -> seat index at that table (0-based, in drawing order)
   let updated=null;
   const clean=o=>{const r={};Object.keys(o||{}).forEach(k=>{const t=+o[k];if(byId[k]&&tByN[t])r[k]=t});return r};
   function load(){
     let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
     // a local draft only survives while it was made on top of the current published version;
     // when SEATING_VERSION changes, the newly published layout wins automatically
-    if(s&&s.a&&s.base===SEATING_VERSION){A=clean(s.a);updated=s.t||null}
-    else{if(s){try{localStorage.removeItem(KEY)}catch(e){}}A=clean(SEATING);updated=null}
+    if(s&&s.a&&s.base===SEATING_VERSION){A=clean(s.a);SP=cleanS(s.s);updated=s.t||null}
+    else{if(s){try{localStorage.removeItem(KEY)}catch(e){}}A=clean(SEATING);SP={};updated=null}
+    normSeats();
   }
-  function save(){updated=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify({base:SEATING_VERSION,a:A,t:updated}))}catch(e){}}
-  function resetToBase(){A=clean(SEATING);try{localStorage.removeItem(KEY)}catch(e){}updated=null;render();toast("Loaded the published draft")}
-  function setT(id,t){t=+t||0;if(t)A[id]=t;else delete A[id];save();render()}
+  const cleanS=o=>{const r={};Object.keys(o||{}).forEach(k=>{const v=o[k];if(byId[k]&&Number.isInteger(+v)&&+v>=0&&v!==null&&v!=="")r[k]=+v});return r};
+  /* seat slots per table (matches geom: two equal sides, grows only if over capacity) */
+  const slots=(t,n)=>2*Math.ceil(Math.max(t.cap,n)/2);
+  /* default seat order = the original list order (couple first, then guest-list order, neighbor requests) */
+  const defOrder=n=>nextTo(inTable(n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||0));
+  /* make every seated guest own exactly one valid, unique seat; guests without one fill the first open seats in default order */
+  function normSeats(){
+    Object.keys(SP).forEach(k=>{if(!A[k])delete SP[k]});
+    TABLES.forEach(t=>{const gs=defOrder(t.n),N=slots(t,gs.length),used=new Set(),rest=[];
+      gs.forEach(g=>{const s=SP[g.id];if(s!==undefined&&s<N&&!used.has(s)){used.add(s)}else rest.push(g)});
+      let i=0;rest.forEach(g=>{while(used.has(i))i++;SP[g.id]=i;used.add(i)})});
+  }
+  /* seat -> guest map for one table */
+  function seatMap(n){const m={};inTable(n).forEach(g=>{m[SP[g.id]]=g});return m}
+  function save(){updated=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify({base:SEATING_VERSION,a:A,s:SP,t:updated}))}catch(e){}}
+  function resetToBase(){A=clean(SEATING);SP={};normSeats();try{localStorage.removeItem(KEY)}catch(e){}updated=null;render();toast("Loaded the published draft")}
+  function setT(id,t){t=+t||0;if(t){if(A[id]!==t)delete SP[id];A[id]=t}else{delete A[id];delete SP[id]}normSeats();save();render()}
+  /* put a guest in a specific seat; if someone is there, they swap into the mover's old seat (or go unassigned) */
+  function moveTo(id,t,s){
+    t=+t;s=+s;const cur=seatMap(t)[s];if(cur&&cur.id===id)return;
+    const oT=A[id]||0,oS=SP[id];
+    if(cur){if(oT){A[cur.id]=oT;SP[cur.id]=oS}else{delete A[cur.id];delete SP[cur.id]}}
+    A[id]=t;SP[id]=s;normSeats();save();render();
+    toast(cur?"Swapped "+name(byId[id])+" and "+name(cur)+(oT?"":" (now unassigned)"):name(byId[id])+" → Table "+t+", seat "+(s+1));
+  }
 
   /* ---- share code: MAS1. + base64url of table numbers in GUESTS order ---- */
   function code(){
     const s=GUESTS.map(g=>(A[g.id]||0).toString(36)).join("");
-    return"MAS1."+btoa(SEATING_VERSION+"|"+s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+    const p=GUESTS.map(g=>A[g.id]?(SP[g.id]||0).toString(36):"0").join("");
+    return"MAS2."+btoa(SEATING_VERSION+"|"+s+"|"+p).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
   }
   function parseCode(c){
-    const m=c.match(/MAS1\.([A-Za-z0-9_-]+)/);if(!m)return null;
+    const m=c.match(/MAS([12])\.([A-Za-z0-9_-]+)/);if(!m)return null;const v2=m[1]==="2";m[1]=m[2];
     let b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
-    const raw=atob(b),parts=raw.split("|"),ver=parts.length>1?parts[0]:"",s=parts.pop(),o={};
+    const raw=atob(b),parts=raw.split("|"),ps=v2?parts.pop():"",ver=parts.length>1?parts[0]:"",s=parts.pop(),o={},so={};
     // share codes store tables in GUESTS order; older versions had a different guest list
     let ids=GUESTS.map(g=>g.id);
     if(ver&&ver<"2026-10-10.4")ids=ids.filter(x=>x!=="g005");       // before Dodi (mom) was restored
     else if(ver==="2026-10-10.4")ids=ids.filter(x=>x!=="g129");      // the version without Max Lucarelli
-    ids.forEach((id,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t&&byId[id])o[id]=t});
+    ids.forEach((id,i)=>{const t=parseInt(s.charAt(i)||"0",36);if(t&&byId[id]){o[id]=t;if(v2)so[id]=parseInt(ps.charAt(i)||"0",36)}});
+    Object.defineProperty(o,"__s",{value:so,enumerable:false});
     return o;
   }
   function parseAny(txt){
@@ -522,9 +553,10 @@ footer a{color:var(--teal);font-weight:600}
     const c=parseCode(txt);if(c)return c;
     const j=JSON.parse(txt);
     const src=j.SEATING||j.assignments||j;
+    const so={};if(j.SEATS)Object.keys(j.SEATS).forEach(k=>{so[k]=+j.SEATS[k]-1});else if(Array.isArray(j.guests))j.guests.forEach(x=>{if(x.id&&x.seat)so[x.id]=+x.seat-1});
     // also accept names list for robustness
-    if(Array.isArray(j.guests)&&!j.SEATING){const o={};j.guests.forEach(x=>{const g=byId[x.id]||GUESTS.find(y=>name(y).toLowerCase()===String(x.name||"").toLowerCase());if(g&&x.table)o[g.id]=+x.table});return o}
-    return src;
+    if(Array.isArray(j.guests)&&!j.SEATING){const o={};j.guests.forEach(x=>{const g=byId[x.id]||GUESTS.find(y=>name(y).toLowerCase()===String(x.name||"").toLowerCase());if(g&&x.table)o[g.id]=+x.table});Object.defineProperty(o,"__s",{value:so,enumerable:false});return o}
+    const o2=Object.assign({},src);Object.defineProperty(o2,"__s",{value:so,enumerable:false});return o2;
   }
 
   /* ---- counts ---- */
@@ -605,9 +637,10 @@ footer a{color:var(--teal);font-weight:600}
       if(!moved)break}
     return P;
   }
-  function seatHtml(g,x,y){
-    if(!g)return'<span class="chip seat empty" style="left:'+x+'px;top:'+y+'px" draggable="false"></span>';
-    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+'" draggable="true" data-id="'+g.id+'" style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.x?g.f+" "+g.l:g.f)+'</span><span class="ln">'+esc(g.x?"("+g.x+")":g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+(g.mn?'<span class="mb" title="Minor">M</span>':"")+'</span>';
+  function seatHtml(g,x,y,tn,si){
+    const ds=' data-t="'+tn+'" data-s="'+si+'"';
+    if(!g)return'<span class="chip seat empty"'+ds+' style="left:'+x+'px;top:'+y+'px" draggable="false" title="Table '+tn+', seat '+(si+1)+' (open)"></span>';
+    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+(g.id===pickId?" picked":"")+'" draggable="true" data-id="'+g.id+'"'+ds+' style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+" · seat "+(si+1)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.x?g.f+" "+g.l:g.f)+'</span><span class="ln">'+esc(g.x?"("+g.x+")":g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+(g.mn?'<span class="mb" title="Minor">M</span>':"")+'</span>';
   }
   /* seat-neighbor requests: guest -> the guest they should sit right next to (same table only) */
   const NEXT_TO={"g137":"g130"}; // Sarah MacAskill next to Atlas Lucarelli
@@ -631,7 +664,7 @@ footer a{color:var(--teal);font-weight:600}
   const match=g=>{const s=q();return!!s&&(name(g).toLowerCase().includes(s)||(g.d||"").toLowerCase().includes(s))};
 
   function render(){
-    const c=counts();
+    normSeats();const c=counts();
     const seated=Object.keys(A).length,un=GUESTS.length-seated,cap=TABLES.reduce((a,t)=>a+t.cap,0);
     const over=TABLES.filter(t=>c[t.n]>t.cap);
     $("count").textContent="☀ "+seated+" of "+GUESTS.length+" seated · "+un+" unassigned"+(over.length?" · "+over.length+" over capacity":"");
@@ -640,7 +673,7 @@ footer a{color:var(--teal);font-weight:600}
     const cv=$("canvas");cv.querySelectorAll(".tbl").forEach(e=>e.remove());
     const hasQ=!!q();cv.classList.toggle("dim",hasQ);
     layout(c).forEach(p=>{const t=p.t,g=p.g;
-      const gs=nextTo(inTable(t.n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||0));
+      const sm=seatMap(t.n);
       const d=document.createElement("div");
       d.className="tbl"+(t.note?" head":"")+(c[t.n]>t.cap?" overcap":c[t.n]===t.cap?" full":"");
       d.dataset.t=t.n;
@@ -649,7 +682,7 @@ footer a{color:var(--teal);font-weight:600}
       const tw=g.top.w,th=g.top.h;
       const lbl=t.shape==="round"?'<b>'+t.n+'</b><i>'+c[t.n]+'/'+t.cap+'</i>':t.dir==="v"?'<b>'+t.n+'</b><i>'+c[t.n]+'/'+t.cap+'</i>':'<b>Table '+t.n+(t.note?' · Head table':'')+'</b><i>'+c[t.n]+'/'+t.cap+'</i>';
       let h='<div class="top '+(t.shape==="round"?"disc":"wood"+(t.dir==="v"?" v":""))+'" style="left:'+(cx-tw/2)+'px;top:'+(cy-th/2)+'px;width:'+tw+'px;height:'+th+'px">'+lbl+'</div>';
-      g.seats.forEach((s,i)=>{h+=seatHtml(gs[i],Math.round(cx+s[0]),Math.round(cy+s[1]))});
+      g.seats.forEach((s,i)=>{h+=seatHtml(sm[i],Math.round(cx+s[0]),Math.round(cy+s[1]),t.n,i)});
       d.innerHTML=h;
       d.title=c[t.n]>t.cap?"Over capacity!":"Table "+t.n+" · "+kind(t)+" · "+c[t.n]+"/"+t.cap;
       cv.appendChild(d);
@@ -665,7 +698,7 @@ footer a{color:var(--teal);font-weight:600}
     // list view
     let h="";
     TABLES.forEach(t=>{
-      const gs=inTable(t.n).sort((a,b)=>(COUPLE.has(b.id)-COUPLE.has(a.id))||sortG(a,b));
+      const gs=inTable(t.n).sort((a,b)=>SP[a.id]-SP[b.id]);
       h+='<div class="lt'+(t.note?" head":"")+(c[t.n]>t.cap?" overcap":"")+'"><h3>Table '+t.n+(t.note?" — "+esc(t.note):" — "+esc(kind(t)))+'<span>'+c[t.n]+'/'+t.cap+'</span></h3>'+
         (gs.length?gs.map(g=>lrow(g,c)).join(""):'<div class="empty">No one yet</div>')+'</div>';
     });
@@ -674,18 +707,22 @@ footer a{color:var(--teal);font-weight:600}
     const dc=GUESTS.filter(g=>g.d).length;
     $("lvsum").textContent=seated+" seated · "+un+" unassigned · "+dc+" dietary notes";
   }
-  function lrow(g,c){return'<div class="lrow'+(match(g)?" hit":"")+'"><span class="n">'+esc(name(g))+MB(g)+(g.d?' '+dIcon(g.d)+'<span class="dn">'+esc(g.d)+'</span>':"")+'</span><select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>'}
+  function lrow(g,c){return'<div class="lrow'+(match(g)?" hit":"")+'"><span class="n">'+(A[g.id]?'<span class="sn" title="Seat">'+(SP[g.id]+1)+'</span>':"")+esc(name(g))+MB(g)+(g.d?' '+dIcon(g.d)+'<span class="dn">'+esc(g.d)+'</span>':"")+'</span><select data-id="'+g.id+'" aria-label="Table for '+esc(name(g))+'">'+options(A[g.id]||0,c)+'</select></div>'}
 
   /* ---- drag & drop ---- */
   let dragId=null;
-  document.addEventListener("dragstart",e=>{const ch=e.target.closest&&e.target.closest(".chip");if(!ch)return;dragId=ch.dataset.id;ch.classList.add("dragging");hidePop();try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(_){}});
-  document.addEventListener("dragend",e=>{dragId=null;document.querySelectorAll(".dragging,.over").forEach(x=>x.classList.remove("dragging","over"))});
+  document.addEventListener("dragstart",e=>{const ch=e.target.closest&&e.target.closest(".chip[data-id]");if(!ch)return;endPick();dragId=ch.dataset.id;ch.classList.add("dragging");hidePop();try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(_){}});
+  document.addEventListener("dragend",e=>{dragId=null;document.querySelectorAll(".dragging,.over,.sover").forEach(x=>x.classList.remove("dragging","over","sover"))});
   function target(e){return e.target.closest&&(e.target.closest(".tbl")||e.target.closest("#aside"))}
+  const seatEl=e=>e.target.closest&&e.target.closest(".canvas .seat[data-s]");
   document.addEventListener("dragover",e=>{const t=target(e);if(!t||!dragId)return;e.preventDefault();e.dataTransfer.dropEffect="move";
     document.querySelectorAll(".over").forEach(x=>{if(x!==t&&x!==$("unassigned"))x.classList.remove("over")});
+    const se=seatEl(e);document.querySelectorAll(".sover").forEach(x=>{if(x!==se)x.classList.remove("sover")});if(se)se.classList.add("sover");
     if(t.id==="aside")$("unassigned").classList.add("over");else{$("unassigned").classList.remove("over");t.classList.add("over")}});
   document.addEventListener("drop",e=>{const t=target(e);if(!t)return;e.preventDefault();const id=dragId||e.dataTransfer.getData("text/plain");if(!byId[id])return;
-    const n=t.id==="aside"?0:+t.dataset.t;dragId=null;setT(id,n);if(n){const c=counts();if(c[n]>tByN[n].cap)toast("Table "+n+" is over capacity ("+c[n]+"/"+tByN[n].cap+")")}});
+    const se=seatEl(e);document.querySelectorAll(".sover").forEach(x=>x.classList.remove("sover"));
+    if(se){dragId=null;moveTo(id,se.dataset.t,se.dataset.s);return}
+    const n=t.id==="aside"?0:+t.dataset.t;dragId=null;if(n&&A[id]===n)return;setT(id,n);if(n){const c=counts();if(c[n]>tByN[n].cap)toast("Table "+n+" is over capacity ("+c[n]+"/"+tByN[n].cap+")")}});
 
   /* ---- selects (mobile fallback) ---- */
   document.addEventListener("change",e=>{if(e.target.matches("select[data-id]")){setT(e.target.dataset.id,e.target.value);hidePop()}});
@@ -693,10 +730,16 @@ footer a{color:var(--teal);font-weight:600}
   /* ---- tap a chip on the plan for a popover ---- */
   const pop=$("pop");
   function hidePop(){pop.classList.remove("show")}
+  pop.addEventListener("click",e=>{const b=e.target.closest("[data-pick]");if(b)startPick(b.dataset.pick)});
+  let pickId=null;
+  function startPick(id){pickId=id;hidePop();document.body.classList.add("picking");render();toast("Tap a seat for "+name(byId[id])+" (tap the same name to cancel)")}
+  function endPick(){if(!pickId)return;pickId=null;document.body.classList.remove("picking");document.querySelectorAll(".picked").forEach(x=>x.classList.remove("picked"))}
+  $("unassigned").addEventListener("click",e=>{const ch=e.target.closest(".chip[data-id]");if(!ch)return;if(pickId===ch.dataset.id){endPick();render();return}startPick(ch.dataset.id)});
   $("canvas").addEventListener("click",e=>{
+    if(pickId){const se=e.target.closest(".seat[data-s]");if(se){e.stopPropagation();const id=pickId;endPick();if(se.dataset.id===id){render();return}moveTo(id,se.dataset.t,se.dataset.s);return}}
     const ch=e.target.closest(".chip[data-id]");if(!ch){hidePop();return}
     const g=byId[ch.dataset.id],c=counts();
-    pop.innerHTML='<b>'+esc(name(g))+'</b>'+(g.d?'<div class="dn">'+dIcon(g.d)+' '+esc(g.d)+'</div>':'')+'<select data-id="'+g.id+'">'+options(A[g.id]||0,c)+'</select>';
+    pop.innerHTML='<b>'+esc(name(g))+'</b>'+(A[g.id]?'<div class="dn" style="color:var(--muted)">Table '+A[g.id]+', seat '+(SP[g.id]+1)+'</div>':'')+(g.d?'<div class="dn">'+dIcon(g.d)+' '+esc(g.d)+'</div>':'')+'<select data-id="'+g.id+'">'+options(A[g.id]||0,c)+'</select><button class="btn pick" data-pick="'+g.id+'">Move to a seat… (then tap a seat)</button>';
     const r=ch.getBoundingClientRect();pop.classList.add("show");
     const w=pop.offsetWidth,h=pop.offsetHeight;
     pop.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+"px";
@@ -731,13 +774,15 @@ footer a{color:var(--teal);font-weight:600}
   $("bExport").onclick=()=>{
     const out={app:"ma-seating-chart",exported:new Date().toISOString(),baseVersion:SEATING_VERSION,shareCode:code(),
       SEATING:sortedSeating(),
-      guests:GUESTS.map(g=>({id:g.id,name:name(g),table:A[g.id]||null,dietary:g.d||""}))};
+      SEATS:(()=>{const o={};Object.keys(sortedSeating()).forEach(k=>o[k]=SP[k]+1);return o})(),
+      seatNote:"SEATS = seat number at the table (1-based, clockwise-ish in drawing order: along one side, then back along the other)",
+      guests:GUESTS.map(g=>({id:g.id,name:name(g),table:A[g.id]||null,seat:A[g.id]?SP[g.id]+1:null,dietary:g.d||""}))};
     download("seating.json",JSON.stringify(out,null,1),"application/json");toast("Downloaded seating.json");
   };
   $("bCsv").onclick=()=>{
     const q2=s=>'"'+String(s).replace(/"/g,'""')+'"';
-    const rows=[["Table","Guest","Dietary"]];
-    GUESTS.slice().sort((a,b)=>(A[a.id]||99)-(A[b.id]||99)||sortG(a,b)).forEach(g=>rows.push([A[g.id]?"Table "+A[g.id]+(tByN[A[g.id]].note?" (Head)":""):"Unassigned",name(g),g.d||""]));
+    const rows=[["Table","Seat","Guest","Dietary"]];
+    GUESTS.slice().sort((a,b)=>(A[a.id]||99)-(A[b.id]||99)||(A[a.id]?SP[a.id]-SP[b.id]:0)||sortG(a,b)).forEach(g=>rows.push([A[g.id]?"Table "+A[g.id]+(tByN[A[g.id]].note?" (Head)":""):"Unassigned",A[g.id]?SP[g.id]+1:"",name(g),g.d||""]));
     download("seating-chart.csv","\ufeff"+rows.map(r=>r.map(q2).join(",")).join("\r\n"),"text/csv");toast("Downloaded seating-chart.csv");
   };
   function copy(txt){
@@ -764,7 +809,7 @@ footer a{color:var(--teal);font-weight:600}
     let o;try{o=parseAny($("dlgTxt").value)}catch(e){o=null}
     if(!o){toast("Couldn't read that — paste a share code or seating.json");return}
     const cl=clean(o);if(!Object.keys(cl).length&&!confirm("That arrangement has nobody seated. Load it anyway?"))return;
-    A=cl;save();render();closeDlg();toast("Loaded "+Object.keys(A).length+" seat assignments");
+    A=cl;SP=cleanS(o.__s);normSeats();save();render();closeDlg();toast("Loaded "+Object.keys(A).length+" seat assignments");
   };
   /* ---- Abbey final-count form: Part 2 (counts/meals per table) + Part 3 (guest list by table) ---- */
   const MEALS=["Vegetarian","Gluten Free","Dairy Free"];
@@ -804,7 +849,7 @@ footer a{color:var(--teal);font-weight:600}
   load();decor();render();applyZoom();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitNames);addEventListener("load",fitNames);
   if(/[?&]view=list/.test(location.search))view("list");
-  if(/MAS1\./.test(location.hash)){const o=parseCode(location.hash);if(o)showBanner("This link contains a shared seating arrangement.",[["Load it",()=>{A=clean(o);save();render();hideBanner();history.replaceState(null,"",location.pathname)}],["Ignore",hideBanner]])}
+  if(/MAS[12]\./.test(location.hash)){const o=parseCode(location.hash);if(o)showBanner("This link contains a shared seating arrangement.",[["Load it",()=>{A=clean(o);SP=cleanS(o.__s);normSeats();save();render();hideBanner();history.replaceState(null,"",location.pathname)}],["Ignore",hideBanner]])}
 })();
 </script>
 </body>
