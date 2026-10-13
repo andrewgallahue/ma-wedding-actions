@@ -18,7 +18,7 @@ try{if(window.self!==window.top)document.documentElement.classList.add("embedded
    Guests not listed are unassigned. To publish someone's arrangement, paste the
    "SEATING" object from their exported seating.json here, bump SEATING_VERSION,
    and republish. Viewers then get a "new published draft" prompt. */
-const SEATING_VERSION = "2026-10-12.1";
+const SEATING_VERSION = "2026-10-12.2";
 const SEATING = {
   "g037":1,"g038":1,"g049":1,"g050":1,"g066":1,"g067":1,"g095":1,"g096":1,
   "g190":1,"g191":1,"g068":2,"g069":2,"g070":2,"g071":2,"g072":2,"g074":2,
@@ -68,8 +68,8 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g030","f":"Max","l":"Durham"},
   {"id":"g031","f":"Kieran","l":"Byrnes"},
   {"id":"g032","f":"Lauren","l":"Fisher"},
-  {"id":"g033","f":"Emily","l":"Chandler","mn":1},
-  {"id":"g034","f":"Everett","l":"Chandler","d":"No meat (from Welcome Party RSVP; wedding note blank)","c":"confirm: no meat?"},
+  {"id":"g033","f":"Emily","l":"Chandler"},
+  {"id":"g034","f":"Everett","l":"Chandler"},
   {"id":"g035","f":"Joanie","l":"Chandler"},
   {"id":"g036","f":"Grace","l":"Chandler"},
   {"id":"g037","f":"Frederick","l":"Colberg"},
@@ -189,7 +189,7 @@ const GUESTS = [{"id":"g001","f":"Susan","l":"Allison"},
   {"id":"g180","f":"Camdon","l":"Steele"},
   {"id":"g181","f":"Rylie","l":"Steele"},
   {"id":"g182","f":"Nicole","l":"Steinbacher"},
-  {"id":"g185","f":"Esme","l":"Stults","mn":1},
+  {"id":"g185","f":"Esme","l":"Stults","mn":1,"mt":"Minor · needs a booster seat"},
   {"id":"g186","f":"Margaux","l":"Stults"},
   {"id":"g190","f":"Hannah","l":"Tully"},
   {"id":"g191","f":"Tim","l":"Tully"},
@@ -475,7 +475,7 @@ footer a{color:var(--teal);font-weight:600}
   const tByN={};TABLES.forEach(t=>tByN[t.n]=t);
   const COUPLE=new Set(["g066","g067"]);
   const name=g=>g.f+" "+g.l+(g.x?" ("+g.x+")":"");
-  const MB=g=>g.mn?'<span class="mb" title="Minor">M</span>':"";
+  const MB=g=>g.mn?'<span class="mb" title="'+esc(g.mt||"Minor")+'">M</span>':"";
   const short=g=>g.f+" "+g.l.charAt(0)+".";
 
   /* ---- dietary icons ---- */
@@ -641,7 +641,7 @@ footer a{color:var(--teal);font-weight:600}
   function seatHtml(g,x,y,tn,si){
     const ds=' data-t="'+tn+'" data-s="'+si+'"';
     if(!g)return'<span class="chip seat empty"'+ds+' style="left:'+x+'px;top:'+y+'px" draggable="false" title="Table '+tn+', seat '+(si+1)+' (open)"></span>';
-    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+(g.id===pickId?" picked":"")+'" draggable="true" data-id="'+g.id+'"'+ds+' style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+" · seat "+(si+1)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.x?g.f+" "+g.l:g.f)+'</span><span class="ln">'+esc(g.x?"("+g.x+")":g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+(g.mn?'<span class="mb" title="Minor">M</span>':"")+'</span>';
+    return'<span class="chip seat'+(COUPLE.has(g.id)?" couple":"")+(match(g)?" hit":"")+(g.id===pickId?" picked":"")+'" draggable="true" data-id="'+g.id+'"'+ds+' style="left:'+x+'px;top:'+y+'px" title="'+esc(name(g)+" · seat "+(si+1)+(g.d?" — "+g.d:""))+'"><span class="fn">'+esc(g.x?g.f+" "+g.l:g.f)+'</span><span class="ln">'+esc(g.x?"("+g.x+")":g.l)+'</span>'+(g.d?'<span class="di">'+dIcon(g.d)+'</span>':"")+MB(g)+'</span>';
   }
   /* seat-neighbor requests: guest -> the guest they should sit right next to (same table only) */
   const NEXT_TO={"g137":"g130"}; // Sarah MacAskill next to Atlas Lucarelli
