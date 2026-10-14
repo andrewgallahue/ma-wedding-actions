@@ -14,8 +14,8 @@
    (optional fields: link:"https://...", linkText:"label")
    then bump DATA_VERSION (forces viewers' local checkmarks to reset to this file)
    and update LAST_UPDATED. */
-const DATA_VERSION = "2026-10-13.1";
-const LAST_UPDATED = "Tue Oct 13, 2026, 8:26 AM PT";
+const DATA_VERSION = "2026-10-13.2";
+const LAST_UPDATED = "Tue Oct 13, 2026, 5:30 PM PT";
 const WEDDING_DATE = "2026-10-25";
 const TASKS = [
   {id:1,  task:"Fill out Chuck's Final Guest Count form, Part 1 (count, meals, vendors, bar)", category:"This weekend", due:"2026-10-11", note:"Filled with 154 (143 Dual, 1 Veg, 1 Vegan, 5 GF, 3 Kids, 1 Dairy Free). Tables go in Parts 2-3 once final.", done:true},
@@ -25,7 +25,7 @@ const TASKS = [
   {id:29, task:"Reply to Chuck: our 2 table wines and the Painkiller recipe with nutmeg", category:"Alcohol", due:"2026-10-13", note:"Already built his tips into the Oct 12 BevMo order: all 750ml, 17 tequila, 4 bourbon, 10 beer cases, no pineapple juice (Abbey has extra, free). Table wines: DAOU Cabernet Sauvignon and DAOU Sauvignon Blanc. Still need to tell Chuck those two and send him the Painkiller recipe with nutmeg added.", done:false},
   {id:5,  task:"Buy 50+ coconut waters at the grocery store", category:"Pickups & errands", due:"2026-10-16", note:"Drop off at Darlington the wedding morning.", done:false},
   {id:30, task:"Buy nutmeg for the Painkillers", category:"Pickups & errands", due:"2026-10-18", note:"Abbey's bar package doesn't include it. Bring it to Darlington with the coconut waters.", done:false},
-  {id:6,  task:"Abbey final payment", category:"Payments", due:"2026-10-15", note:"Sent Chuck Parts 2-3 on Oct 12, so his final invoice should come next. When it does, check it has the 11th chair at Table 8 and the two umbrellas for the string quartet, then pay.", done:false},
+  {id:6,  task:"Abbey final payment", category:"Payments", due:"2026-10-15", note:"Final invoice came Oct 13: balance due $23,542.16 by Oct 15 (grand total $37,994.16 minus $14,452 already paid). That includes a $2,098.87 voluntary staff tip line; ask Chuck for a balance-only link if you'd rather tip after. It has the 72-inch round for Table 8 and the 2 market umbrellas. Chuck is sending a debit card link that expires 48 hours after it arrives; credit cards add a 1.5% fee, and the amount may need splitting across 2 cards or 2 days. Worth asking Chuck: the invoice shows 150 guests 21+ and 4 under 21 (our form had 151 and 3) and 4 vendor meals (we listed 2); vendor meals are $0.", done:false},
   {id:7,  task:"Piatti final menu due", category:"Rehearsal dinner", due:"2026-10-17", note:"Apps: 1 platter each.", done:false},
   {id:8,  task:"Piatti final headcount (58)", category:"Rehearsal dinner", due:"2026-10-21", note:"Told Kasey 58 on Oct 10; she replied Oct 12 that she'll set 60 seats per the layout for flexibility. Confirm by Oct 21.", done:false},
   {id:9,  task:"Confirm Wheat & Water headcount", category:"Welcome drinks", due:"2026-10-16", note:"Confirmed to Whitney Oct 11: 141 adults + 3 kids, five pizzas, drinks and timeline.", done:true},
@@ -34,14 +34,14 @@ const TASKS = [
   {id:12, task:"Practice first dance with Maddie", category:"Music", due:"2026-10-17", note:"", done:false},
   {id:21, task:"Practice mother-son dance with Mom", category:"Music", due:"2026-10-21", note:"", done:false},
   {id:13, task:"Finalize reception table assignments (seating chart)", category:"Seating", due:"2026-10-12", note:"Done Oct 12: 154 guests across 16 tables. Table 8 has 11.", done:true},
-  {id:20, task:"Fill out Chuck's Final Guest Count form with table assignments, then email Chuck it's done", category:"Seating", due:"2026-10-12", note:"Sent Oct 12: Part 2 filled in on the shared form, Part 3 (guests by table with dietary notes) attached as a PDF. Also asked Chuck for an 11th chair at Table 8 and two umbrellas for the string quartet.", link:"https://wedgewoodweddings-my.sharepoint.com/:w:/p/meganlessert/IQCwjZXV0SEzQ6nPmfPmIHPEAbPBaURFyHXmN43M6EeLMtA?e=ldmY9B", linkText:"Final Guest Count form", done:true},
+  {id:20, task:"Fill out Chuck's Final Guest Count form with table assignments, then email Chuck it's done", category:"Seating", due:"2026-10-12", note:"Sent Oct 12: Part 2 filled in on the shared form, Part 3 (guests by table with dietary notes) attached as a PDF. Also asked Chuck for an 11th chair at Table 8 and two umbrellas for the string quartet. Chuck confirmed Oct 13 that everything checks out. Since 11 won't fit a 60-inch round or a farm table, Table 8 becomes a 72-inch round and swaps spots with Table 6. Umbrellas noted.", link:"https://wedgewoodweddings-my.sharepoint.com/:w:/p/meganlessert/IQCwjZXV0SEzQ6nPmfPmIHPEAbPBaURFyHXmN43M6EeLMtA?e=ldmY9B", linkText:"Final Guest Count form", done:true},
   {id:15, task:"Buy seating display supplies: poster boards, paper clips, brown yarn", category:"Pickups & errands", due:"2026-10-11", note:"One poster board per table, guest names on paper clips; punch a hole in each board and weave the yarn through to hang them.", done:false},
   {id:14, task:"Ceremony seating: decide reserved front rows for family (optional)", category:"Seating", due:"2026-10-18", note:"From the original checklist; Abbey doesn't need it. Usually just 'Reserved' signs on the first rows for parents and grandmothers.", done:false},
   {id:16, task:"Print the bar sign and get table runners", category:"Pickups & errands", due:"2026-10-18", note:"Bar sign = our drink menu sign (24x60 banner or 24x36 poster), not the PDF sent to Chuck. Runners 9-10 ft.", done:false},
   {id:17, task:"Finalize Maddie's photo people list", category:"Photos", due:"2026-10-16", note:"Maddie is handling.", done:false},
   {id:18, task:"Day-of event insurance sent to Darlington", category:"Insurance", due:"2026-10-09", note:"", done:true},
   {id:19, task:"Nudge Bernardo for updated quote", category:"Alcohol", due:"2026-10-09", note:"", done:true},
-  {id:28, task:"Review Whitney's updated Wheat & Water buyout packet", category:"Welcome drinks", due:"2026-10-16", note:"Asked Oct 11 how the cauliflower-crust gluten-free pizzas work and what adding House and Caesar salads does to the $22/person price.", done:false},
+  {id:28, task:"Review Whitney's updated Wheat & Water buyout packet", category:"Welcome drinks", due:"2026-10-16", note:"Whitney confirmed Oct 13: both salads are added, and at least one of each pizza will be on cauliflower crust. She didn't say whether the salads change the $22/person price.", done:true},
   {id:22, task:"Finalize Wheat & Water slideshow: add photos of as many guests as we have to the shared album", category:"Welcome drinks", due:"2026-10-17", note:"Apple shared album: M&A Welcome Party Slideshow", done:false},
   {id:23, task:"Text Aunt re: Grandma's Friday brunch, confirm we're set and share Grandma's weekend game plan", category:"Texts", due:"2026-10-17", note:"", done:false},
   {id:24, task:"Text the ceremony crew (officiant, best man, maid of honor, anyone standing up) the church rehearsal time and place", category:"Texts", due:"2026-10-17", note:"", done:false},
